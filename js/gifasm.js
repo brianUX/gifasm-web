@@ -67,15 +67,15 @@ $(function(){
 			}
 		});
 	
-		//login view
-		LoginView = Parse.View.extend({
+		//logged out view
+		LoggedOutView = Parse.View.extend({
 			events: {
 			  "submit form.login-form": "logIn",
 			  "submit form.signup-form": "signUp"
 			},
 			el: ".user",
 			initialize: function() {
-			    _.bindAll(this, "logIn", "signUp", "delete");
+			    _.bindAll(this, "logIn", "signUp");
 			    this.render();
 			},
 			render: function() {
@@ -88,8 +88,8 @@ $(function(){
 			
 			  Parse.User.logIn(username, password, {
 			    success: function(user) {
-			      new LogoutView();
-			      self.remove();
+			      new LoggedInView();
+			      delete self;
 			    },
 			    error: function(user, error) {
 			      self.$(".login-form .error").html("Invalid username or password. Please try again.").show();
@@ -106,8 +106,8 @@ $(function(){
 
 			  Parse.User.signUp(username, password, { ACL: new Parse.ACL() }, {
 			    success: function(user) {
-				  new LogoutView();
-				  self.remove();
+				  new LoggedInView();
+				  delete self;
 			    },
 			    error: function(user, error) {
 			      self.$(".signup-form .error").html(error.message).show();
@@ -116,14 +116,11 @@ $(function(){
 			  });
 			  this.$(".signup-form button").attr("disabled", "disabled");
 			  return false;
-			},
-			delete: function() {
-				delete this;
 			}
 	    });
 	
-		//logout view
-		LogoutView = Parse.View.extend({
+		//logged in view
+		LoggedInView = Parse.View.extend({
 			events: {
 	     		"click .log-out": "logOut"
 			},
@@ -133,11 +130,11 @@ $(function(){
 			  this.render();
 			},
 			render: function() {
-			  this.$el.append(_.template($("#logout-template").html()));
+			  this.$el.html(_.template($("#logout-template").html()));
 			},
 			logOut: function(e) {
 		      Parse.User.logOut();
-		      new LoginView();
+		      new LoggedOutView();
 		      delete this;
 		    }
 		});
@@ -217,10 +214,10 @@ $(function(){
 		    render: function(){
 				var currentUser = Parse.User.current();
 				if (currentUser) {
-					new LogoutView();
+					new LoggedInView();
 					new UploadView();
 				} else {
-					new LoginView();
+					new LoggedOutView();
 				}
 		    },
 		    events: {
