@@ -16,6 +16,7 @@ $(function(){
 			el: $('.content'),
 			template: _.template($('#gifs-template').html()),
 			initialize: function(){
+				_.bindAll(this);
 				var self = this;
 				this.gifs = new Gifs();
 				this.gifs.fetch({
@@ -44,17 +45,16 @@ $(function(){
 			el: $('.content'),
 			template: _.template($('#gifs-template').html()),
 			initialize: function(){
+				_.bindAll(this);
 				var self = this;
 				var singleGif = Parse.Object.extend("Gif");
 				this.gif = new Parse.Query(singleGif);
 				this.gif.get(this.options.gif, {
 				  	success: function(gif) {
-				    // The object was retrieved successfully.
 						self.render(gif);
 				  	},
 				  	error: function(gif, error) {
-				    // The object was not retrieved successfully.
-				    // error is a Parse.Error with an error code and description.
+						alert('shit');
 				  	}
 				});
 			},
@@ -64,6 +64,38 @@ $(function(){
 					src: thisgif.attributes.src,
 					id: thisgif.id
 				 }));
+			}
+		});
+		
+		//user gifs view
+		UserGifsView = Parse.View.extend({
+			el: $('.content'),
+			template: _.template($('#gifs-template').html()),
+			initialize: function(){
+				_.bindAll(this);
+				var self = this;
+				var query = new Parse.Query(Parse.User);
+				query.equalTo("username", this.options.username);  
+				query.find({
+					success: function(user) {
+						console.log(user);
+						var relation = user[0].relation("gifs");
+						relation.query().find({
+							success: function(gifs) {
+								gifs.forEach(self.render);
+							}
+						});
+					}, 
+					error: function() {
+						alert('couldnt find user gifs');
+					}
+				});
+			},
+			render: function(gif){
+				$(this.el).append(this.template({ 
+					src: gif.attributes.src,
+					id: gif.id
+				}));
 			}
 		});
 	
@@ -128,6 +160,7 @@ $(function(){
 			initialize: function() {
 			  _.bindAll(this, "logOut");
 			  this.render();
+			 var user = Parse.User.current();
 			},
 			render: function() {
 			  this.$el.html(_.template($("#logout-template").html()));
@@ -151,7 +184,7 @@ $(function(){
 			appid: "lwRB5rPvenfJwKYSeDtnCsXj4WNZa3PuwAyAIN3P",
 			restkey: "LfkvpLyFErkF84FPPoZIOzOvSNH10jQI1meGnLEr",
 			initialize: function() {
-				_.bindAll(this, "uploadGif", "grabFile", "addGif", "addUrl");
+				_.bindAll(this, "uploadGif", "grabFile", "addGif", "addUrl", "addToUser");
 			  	this.render();
 			},
 			render: function() {
@@ -191,7 +224,8 @@ $(function(){
 				gif.save({"src": src}, {
 					success: function(gif) {
 						var id = gif.id;
-				    	app.navigate("/"+id+"", {trigger: true});
+						self.addToUser(gif);
+				    	app.navigate("/g/"+id+"", {trigger: true});
 						delete self;
 				  	},
 					error: function() {
@@ -203,6 +237,24 @@ $(function(){
 			  	var urltoadd = this.$("input#urladdsrc").val();
 				this.addGif(urltoadd);
 				return false;
+			}, 
+			addToUser: function(gif) {
+				var user = Parse.User.current();
+				var relation = user.relation("gifs");
+				relation.add(gif);
+				user.save({}, {
+					success: function() {
+						// relation.query().find({
+						//   success: function(list) {
+						//     // list contains the posts that the current user likes.
+						// console.log(list);
+						//   }
+						// });
+					},
+					error: function() {
+						console.log('error addToUser');
+					}
+				});
 			}
 		});
 
@@ -229,17 +281,23 @@ $(function(){
 	var AppRouter = Parse.Router.extend({
 		routes: {
 			""    :    "home",
-			":id" : "singleGif"
+			"g/:id" : "singleGif",
+			":username" : "userGallery"
 		},
-		initialize: function(){
+		initialize: function() {
 	        new AppView();
 	    },
 		home: function() {
-	    	new AllGifsView();
+			new AllGifsView();
 		},
 		singleGif: function(id) {
 			new SingleGifView({
 				gif: id
+			});
+		},
+		userGallery: function(username) {
+			new UserGifsView({
+				username: username
 			});
 		}
 		
