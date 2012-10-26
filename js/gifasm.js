@@ -59,8 +59,7 @@ $(function(){
 				});
 			},
 			render: function(thisgif){
-				var self = this;
-				$(self.el).html(self.template({ 
+				$(this.el).html(this.template({ 
 					src: thisgif.attributes.src,
 					id: thisgif.id
 				 }));
@@ -74,17 +73,17 @@ $(function(){
 			initialize: function(){
 				_.bindAll(this);
 				var self = this;
-				var query = new Parse.Query(Parse.User);
-				query.equalTo("username", this.options.username);  
-				query.find({
-					success: function(user) {
-						console.log(user);
-						var relation = user[0].relation("gifs");
-						relation.query().find({
-							success: function(gifs) {
-								gifs.forEach(self.render);
-							}
-						});
+				var username = this.options.username;
+				//grab all gifs by user
+				var gifs = new Parse.Query("Gif");
+				gifs.equalTo("username", username);
+				gifs.find({
+					success: function(gifs) {
+						if (gifs.length > 0) {
+							gifs.forEach(self.render);	
+						} else {
+							alert("this user has no gifs");
+						}
 					}, 
 					error: function() {
 						alert('couldnt find user gifs');
@@ -121,6 +120,7 @@ $(function(){
 			  Parse.User.logIn(username, password, {
 			    success: function(user) {
 			      new LoggedInView();
+				  new UploadView();
 			      delete self;
 			    },
 			    error: function(user, error) {
@@ -153,17 +153,19 @@ $(function(){
 	
 		//logged in view
 		LoggedInView = Parse.View.extend({
+			el: $('.user'),
+			template: _.template($('#logout-template').html()),
 			events: {
 	     		"click .log-out": "logOut"
 			},
-			el: ".user",
 			initialize: function() {
 			  _.bindAll(this, "logOut");
 			  this.render();
-			 var user = Parse.User.current();
 			},
 			render: function() {
-			  this.$el.html(_.template($("#logout-template").html()));
+			  	$(this.el).html(this.template({ 
+					username: Parse.User.current().get("username")
+				 }));
 			},
 			logOut: function(e) {
 		      Parse.User.logOut();
@@ -220,12 +222,17 @@ $(function(){
 			},
 			addGif: function(src) {
 				var self = this;
+				var user = Parse.User.current();
+				var username = user.get("username");
+				var userid = user.id;
 				var gif = new Gif();
-				gif.save({"src": src}, {
-					success: function(gif) {
-						var id = gif.id;
-						self.addToUser(gif);
-				    	app.navigate("/g/"+id+"", {trigger: true});
+				gif.set("src", src);
+				gif.set("username", username);
+				gif.set("userid", userid);
+				gif.save(null, {
+					success: function(newgif) {
+						self.addToUser(newgif);
+						app.navigate("/g/"+newgif.id+"", {trigger: true});
 						delete self;
 				  	},
 					error: function() {
@@ -242,17 +249,12 @@ $(function(){
 				var user = Parse.User.current();
 				var relation = user.relation("gifs");
 				relation.add(gif);
-				user.save({}, {
+				user.save(null, {
 					success: function() {
-						// relation.query().find({
-						//   success: function(list) {
-						//     // list contains the posts that the current user likes.
-						// console.log(list);
-						//   }
-						// });
+
 					},
 					error: function() {
-						console.log('error addToUser');
+						alert('error addToUser');
 					}
 				});
 			}
