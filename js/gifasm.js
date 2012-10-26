@@ -192,6 +192,7 @@ $(function(){
 			},
 			render: function() {
 				this.$el.append(this.template);
+				$("form input.tags").tagsManager();
 			},
 			grabFile: function(e) {
 				var files = e.target.files || e.dataTransfer.files;
