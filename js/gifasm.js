@@ -160,11 +160,12 @@ $(function(){
 			},
 			initialize: function() {
 			  _.bindAll(this, "logOut");
+			  this.user = Parse.User.current();
 			  this.render();
 			},
 			render: function() {
 			  	$(this.el).html(this.template({ 
-					username: Parse.User.current().get("username")
+					username: this.user.get("username")
 				 }));
 			},
 			logOut: function(e) {
