@@ -5,7 +5,7 @@
 @import "tags.scss";
 
 body{
-	background: #f1f1f1;
+	background:url(../img/bg.png) repeat;
 	overflow:hidden;
 }
 
@@ -75,26 +75,35 @@ body{
 			img {
 				position:absolute;
 				top:23px;
-				left:39px;
+				left:38px;
 			}
 		}
 		.user {
 			position:absolute;
-			top:17px;
-			right:20px;
+			top:15px;
+			right:15px;
 			.notloggedin, .loggedin {
-				a.btn {
+				#login.btn, #signup.btn {
 					margin-left:12px;
-					background:#1f6fc8;
-					&:focus, &:active, &:visited {
-						outline:0px !important;
-					    -webkit-appearance:none
-					}
+				}
+				input {
+					width:192px;
+					margin-right: 11px;
 				}
 				.modal {
+					button {
+						position:relative;
+						top:-2px;
+					}
 					&:focus {
 						outline:0px !important;
 					    -webkit-appearance:none
+					}
+					form {
+						margin:3px 0 5px;
+						span {
+							margin-top:10px;
+						}
 					}
 				}
 			}
@@ -114,23 +123,27 @@ body{
 				.add {
 					float:left;
 					margin-right:30px;
+					#add-modal {
+						.main {
+							color: #555;
+							font-size: 12px;
+							width: 280px;
+						}
+						.tags {
+							margin-top:14px;
+						}
+						button {
+							top:-1px;
+						}
+						.myTag {
+							float:right;
+						}
+					}
 				}
 			}
 		}
 	}
 }
-
-//.user {
-//	position:absolute;	
-//	right:20px;
-//	bottom:20px;
-//}
-//
-//.search {
-//	position:absolute;
-//	right:20px;
-//	top:20px;
-//}
 
 .content {
 	.gif-container {
@@ -146,7 +159,7 @@ body{
 		}
 		.tags {
 			position:absolute;
-			bottom:15px;
+			bottom:18px;
 			left:15px;
 			.label {
 				padding:3px 8px 6px;
@@ -159,6 +172,24 @@ body{
 				}
 			}
 		}
+	}
+	.container {
+		width: 100%;
+		margin-top: 64px;
+		padding: 24px;
+		@include text-shadow(0 1px 1px #fff);
+	}
+}
+
+.footer {
+	position:absolute;
+	bottom:15px;
+	right:25px;
+	a, span {
+		color:#858585;
+		font-size:12px;
+		margin:0 0 0 12px;
+		@include text-shadow(0 1px 1px #fff);
 	}
 }
 

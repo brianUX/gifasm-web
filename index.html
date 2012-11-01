@@ -29,7 +29,21 @@
 		</div>
 	
 		
-		<div class="content"></div>
+		<div class="content">
+			<div class="gif-single"></div>
+			<div class="gif-tag"></div>
+			<div class="gif-user"></div>
+			<div class="gif-gallery"></div>
+			<div class="gif-all"></div>
+		</div>
+		
+		<div class="footer">
+			<span>&copy;Gifasm 2012</span>
+			<a href="/#/about">About</a>
+			<a href="/#/help">Help</a>
+			<a href="/#/team">Team</a>
+			<a href="/#/jobs">Jobs</a>
+		</div>
 		
 		<!-- templates -->
 		<script type="text/template" id="gallery-gif-template">
@@ -47,7 +61,7 @@
 		
 		<script type="text/template" id="single-gif-template">
 			<div class="gif-container single-gif">
-				<a href="#/gif/<%= id %>">
+				<a class="gif">
 					<img src="<%= src %>">
 				</a>
 				<div class="tags">
@@ -67,8 +81,8 @@
 		
 		<script type="text/template" id="nonuser-template">
 			<div class="notloggedin">
-			    <a href="#login-modal" role="button" class="btn btn-primary" data-toggle="modal">Log in</a>
-				<a href="#signup-modal" role="button" class="btn btn-primary" data-toggle="modal">Sign up</a>
+			    <div id="login" class="btn btn-primary">Log in</div>
+				<div id="signup" class="btn btn-primary">Sign up</div>
 				<div class="modal hide" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
 					<div class="modal-header">
 				    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -76,10 +90,11 @@
 				  	</div>
 				    <div class="modal-body">
 				        <form class="login-form">
-							<div class="error" style="display:none"></div>
+							<p class="error text-error" style="display:none"></p>
 							<input type="text" id="login-username" placeholder="Username" />
 							<input type="password" id="login-password" placeholder="Password" />
-							<button class="btn" type="button submit">Log In</button>
+							<button class="btn btn-primary" type="button submit">Log In</button>
+							<span class="help-block">Don't have an account? <a href="#" id="signup">Make one</a></span>
 						</form>
 				    </div>
 				</div>
@@ -90,10 +105,11 @@
 				  	</div>
 				    <div class="modal-body">
 						<form class="signup-form">
-							<div class="error" style="display:none"></div>
+							<p class="error text-error" style="display:none"></p>
 							<input type="text" id="signup-username" placeholder="Username" />
 							<input type="password" id="signup-password" placeholder="Create a Password" />
-							<button class="btn" type="button submit">Sign Up</button>
+							<button class="btn btn-primary" type="button submit">Sign Up</button>
+							<span class="help-block">Already have an account? <a href="#" id="login">Log in</a></span>
 						</form>
 					</div>
 				</div>
@@ -103,35 +119,44 @@
 		<script type="text/template" id="user-template">
 			<div class="loggedin">
 				<div class="avatar">
-		      		<a href="#/<%= username %>"><%= username %></a> (<a href="#" class="log-out">Log out</a>)
+		      		<a href="#/user/<%= username %>"><%= username %></a> (<a href="#" class="log-out">Log out</a>)
 		      	</div>
 				<div class="add"></div>
 			</div>
 		</script>
 		
 		<script type="text/template" id="upload-template">
-			<a href="#add-modal" role="button" class="btn btn-primary" data-toggle="modal">+ Add Gif</a>
+			<a href="#add-modal" role="button" class="btn btn-primary" data-toggle="modal">Add Gif</a>
 			<div class="modal hide" id="add-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
 				<div class="modal-header">
 			    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-			    	<h3 id="myModalLabel">+ Add Gif</h3>
+			    	<h3 id="myModalLabel">Add Gif</h3>
 			  	</div>
 				<div class="modal-body">
-					<form id="fileupload" name="fileupload" enctype="multipart/form-data" method="post">
-					  <fieldset>
-					    <input type="file" name="fileselect" id="fileselect">
-					    <input class="btn" id="uploadbutton" type="button" value="Upload"/>
-					  </fieldset>
+					<form id="fileupload" class="add" enctype="multipart/form-data" method="post">
+						<p class="error text-error" style="display:none"></p>
+					    <input type="file" name="fileselect" id="fileselect" class="btn main">
+						<button class="btn btn-primary" type="button submit">Add</button>
+						<input type="text" name="tags" placeholder="Tags" class="tags"/>
+					    <span class="help-block"><a href="#">Use a URL instead</a></span>
 					</form>
-				
-					<form class="urladd">
-					  <fieldset>
-					    <input type="text" id="urladdsrc" placeholder="paste gif url">
+					<form id="urladd" class="add hide">
+				    	<p class="error text-error" style="display:none"></p>
+					    <input type="text" id="urladdsrc" class="main" value="http://">
+				        <button class="btn btn-primary" type="button submit">Add</button>
 				     	<input type="text" name="tags" placeholder="Tags" class="tags"/>
-					    <input class="btn" id="urladdbutton" type="button" value="Add"/>
-					  </fieldset>
+						<span class="help-block"><a href="#">Uploader</a></span>
 					</form>
 				</div>
+			</div>
+		</script>
+		
+		<script type="text/template" id="about-template">
+			<div class="container">
+				<h1>About</h1>
+				<p>Gifasm was created for the love of all things gif.</p> 
+				<p>Until now, the gif art movement has not had a dedicated user experience to properly share and explore gifs.</p>
+				<p>Started in 2012, NYC based Gifasm serves up over 2,000,000 animated gifs.</p>
 			</div>
 		</script>
 

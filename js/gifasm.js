@@ -2,6 +2,8 @@ $(function(){
 
 	Parse.initialize("lwRB5rPvenfJwKYSeDtnCsXj4WNZa3PuwAyAIN3P", "D7k2Ttgt6bzQhGhV3BWRAz42EKSKjZvBaevdl7fU");
 	
+		var count= 0;
+	
 	//models
 	var Gif = Parse.Object.extend("Gif");
 	
@@ -13,7 +15,7 @@ $(function(){
 	
 		//all gifs view
 		AllGifsView = Parse.View.extend({
-			el: $('.content'),
+			el: $('.content .gif-all'),
 			template: _.template($('#gallery-gif-template').html()),
 			initialize: function(){
 				_.bindAll(this, "sizer");
@@ -21,7 +23,7 @@ $(function(){
 				this.query = new Gifs();
 				this.query.fetch({
 					success: function(gifs) {
-						$(".content").empty();
+						$('.content .gif-all').empty();
 						self.render(gifs);
 					},
 					error: function(collection, error) {
@@ -40,7 +42,9 @@ $(function(){
 					};
 					$(self.el).prepend(self.template(data));
 				});
-				new PlayGallery();
+				new PlayGallery({
+					el: $('.content .gif-all')
+				});
 				this.sizer();
 			},
 			sizer: function() {
@@ -65,7 +69,7 @@ $(function(){
 		
 		//user gifs view
 		UserGifsView = Parse.View.extend({
-			el: $('.content'),
+			el: $('.content .gif-user'),
 			template: _.template($('#gallery-gif-template').html()),
 			initialize: function(){
 				_.bindAll(this, "sizer");
@@ -76,7 +80,7 @@ $(function(){
 				gifs.matches("username", username);
 				gifs.find({
 					success: function(gifs) {
-						$(".content").empty();
+						$('.content .gif-user').empty();
 						self.render(gifs);
 					}, 
 					error: function() {
@@ -95,7 +99,9 @@ $(function(){
 						};
 						$(self.el).prepend(self.template(data));
 					});	
-					new PlayGallery();
+					new PlayGallery({
+						el: $('.content .gif-user')
+					});
 					this.sizer();
 				} else {
 					alert("this user has no gifs");
@@ -123,7 +129,7 @@ $(function(){
 		
 		//tagged gifs view
 		TagGifsView = Parse.View.extend({
-			el: $('.content'),
+			el: $('.content .gif-tag'),
 			template: _.template($('#gallery-gif-template').html()),
 			initialize: function (){
 				_.bindAll(this, "sizer");
@@ -134,7 +140,7 @@ $(function(){
 				query.equalTo("tags", tag);
 				query.find({
 					success: function(gifs) {
-						$(".content").empty();
+						$('.content .gif-tag').empty();
 						self.render(gifs);
 					}, 
 					error: function() {
@@ -153,7 +159,9 @@ $(function(){
 						};
 						$(self.el).prepend(self.template(data));
 					});	
-					new PlayGallery();
+					new PlayGallery({
+						el: $('.content .gif-tag')
+					});
 					this.sizer();
 				} else {
 					alert("couldnt find any gifs with that tag");
@@ -181,13 +189,13 @@ $(function(){
 		
 			//play gallery
 			PlayGallery = Parse.View.extend({
-				el: $('.content'),
 				events: {
 		     		"click a.gif": "next"
 				},
 				initialize: function() {
 					_.bindAll(this, "next");
-					var item = $(".content .gallery-gif");
+					this.element = this.options.el;
+					var item = this.element.find(".gallery-gif");
 					var size = item.length;
 					//load first five gifs
 					if (size < 5) {
@@ -206,18 +214,20 @@ $(function(){
 						});
 					}
 					//show first one
-					item.eq(0).removeClass("hide");
+					item.eq(0).removeClass("hide");		
 				},
 				next: function() {
-					var current = $(".content .gallery-gif:visible");
-					var next = current.next(".gallery-gif");
+					console.log(this);
+					var current = this.element.find(".gif-container:visible");
+					var nextdex = current.index() + 1;
+					var next = this.element.find(".gif-container:eq("+nextdex+")");
 					//hide current
 					current.addClass("hide");
 					//show next
 					if (next.length) {
 						next.removeClass("hide");
 						//load next unloaded gif
-						var ondeck = $(".content .gallery-gif.unloaded").eq(0);
+						var ondeck = $(".content .gif-container.unloaded").eq(0);
 						if (ondeck.length) {
 							ondeck.removeClass("unloaded").addClass("loaded");
 							var img = ondeck.find("img");
@@ -227,13 +237,13 @@ $(function(){
 					} else {
 						$(".content .gallery-gif").eq(0).removeClass("hide");
 					}
-				}	
+				}
 			});
 			
 		
 		//single gif view
 		SingleGifView = Parse.View.extend({
-			el: $('.content'),
+			el: $('.content .gif-single'),
 			template: _.template($('#single-gif-template').html()),
 			initialize: function(){
 				_.bindAll(this, "sizer");
@@ -242,7 +252,7 @@ $(function(){
 				this.gif = new Parse.Query(singleGif);
 				this.gif.get(this.options.gif, {
 				  	success: function(gif) {
-						$(".content").empty();
+						$('.content .gif-single').empty();
 						self.render(gif);
 						var tags = gif.attributes.tags;
 				  	},
@@ -300,32 +310,48 @@ $(function(){
 					app.navigate("/tag/"+query+"", {trigger: true});	
 				}
 		    	return false;
+				delete this;
 		    }
 		});
 	
-		//logged out view
-		LoggedOutView = Parse.View.extend({
+		//nonuser view
+		NonuserView = Parse.View.extend({
 			el: ".user",
 			template: _.template($('#nonuser-template').html()),
 			events: {
-			  "submit form.login-form": "logIn",
-			  "submit form.signup-form": "signUp"
+				"click #login": "showLogin",
+				"click #signup": "showSignup",
+			    "submit form.login-form": "logIn",
+			    "submit form.signup-form": "signUp"
 			},
 			initialize: function() {
-			    _.bindAll(this, "logIn", "signUp");
+			    _.bindAll(this, "showLogin", "showSignup", "logIn", "signUp");
 			    this.render();
 			},
 			render: function() {
 			  this.$el.html(this.template());
 			},
+			showLogin: function() {
+				$('#signup-modal').modal('hide');
+				$('#login-modal').modal({
+					backdrop: false
+				});
+				$("#login-username").focus();
+			},
+			showSignup: function() {
+				$('#login-modal').modal('hide');
+				$('#signup-modal').modal({
+					backdrop: false
+				});
+				$("#signup-username").focus();
+			},
 			logIn: function(e) {
 			  var self = this;
 			  var username = this.$("#login-username").val();
 			  var password = this.$("#login-password").val();
-			
 			  Parse.User.logIn(username, password, {
 			    success: function(user) {
-			      new LoggedInView();
+			      new UserView();
 				  new UploadView();
 			      delete self;
 			    },
@@ -344,7 +370,7 @@ $(function(){
 
 			  Parse.User.signUp(username, password, { ACL: new Parse.ACL() }, {
 			    success: function(user) {
-				  new LoggedInView();
+				  new UserView();
 				  delete self;
 			    },
 			    error: function(user, error) {
@@ -357,27 +383,28 @@ $(function(){
 			}
 	    });
 	
-		//logged in view
-		LoggedInView = Parse.View.extend({
+		//user view
+		UserView = Parse.View.extend({
 			el: $('.user'),
 			template: _.template($('#user-template').html()),
 			events: {
 	     		"click .log-out": "logOut"
 			},
 			initialize: function() {
-			  _.bindAll(this, "logOut");
-			  this.user = Parse.User.current();
-			  this.render();
+			    _.bindAll(this, "logOut");
+			    this.user = Parse.User.current();
+				username = this.user.get("username");
+			    this.render();
 			},
 			render: function() {
 			  	$(this.el).html(this.template({ 
-					username: this.user.get("username")
+					username: username
 				 }));
 			},
 			logOut: function(e) {
-		      Parse.User.logOut();
-		      new LoggedOutView();
-		      delete this;
+		        Parse.User.logOut();
+		        new NonuserView();
+		        delete this;
 		    }
 		});
 		
@@ -385,8 +412,8 @@ $(function(){
 		UploadView = Parse.View.extend({
 			events: {
 				"change #fileselect": "grabFile",
-				"click #uploadbutton": "uploadGif",
-				"click #urladdbutton": "addUrl",
+				"submit #fileupload": "uploadGif",
+				"submit #urladd": "addUrl"
 			},
 			el: ".loggedin .add",
 			template: _.template($('#upload-template').html()),
@@ -398,63 +425,82 @@ $(function(){
 			},
 			render: function() {
 				this.$el.append(this.template);
-				$("form input.tags").tagsManager();
+				$("form input.tags").tagsManager({
+					maxTags: 3
+				});
+				$("form.add span a").click(function() {
+					$("form.add").toggle();
+				});
 			},
 			grabFile: function(e) {
 				var files = e.target.files || e.dataTransfer.files;
 		        this.file = files[0];
+				this.filetype = this.file.type;
 			},
 			uploadGif: function() {
-				var self = this;
-				var serverUrl = 'https://api.parse.com/1/files/' + this.file.name;
-				//send file
-				$.ajax({
-					type: "POST",
-					beforeSend: function(request) {
-						request.setRequestHeader("X-Parse-Application-Id", self.appid);
-						request.setRequestHeader("X-Parse-REST-API-Key", self.restkey);
-						request.setRequestHeader("Content-Type", self.file.type);
-					},
-					url: serverUrl,
-					data: self.file,
-					processData: false,
-					contentType: false,
-					success: function(data) {
-						console.log(data);
-						self.addGif(data.url);
-					},
-					error: function(data) {
-					  	var obj = jQuery.parseJSON(data);
-					  	alert(obj.error);
-					}
-				});
+				//make sure its a gif
+				if (this.filetype === "image/gif") {
+					var self = this;
+					var serverUrl = 'https://api.parse.com/1/files/' + this.file.name;
+					//send file
+					$.ajax({
+						type: "POST",
+						beforeSend: function(request) {
+							request.setRequestHeader("X-Parse-Application-Id", self.appid);
+							request.setRequestHeader("X-Parse-REST-API-Key", self.restkey);
+							request.setRequestHeader("Content-Type", self.file.type);
+						},
+						url: serverUrl,
+						data: self.file,
+						processData: false,
+						contentType: false,
+						success: function(data) {
+							console.log(data);
+							self.addGif(data.url);
+						},
+						error: function(data) {
+						  	var obj = jQuery.parseJSON(data);
+						  	alert(obj.error);
+						}
+					});
+				} else {
+					var error = $("#fileupload .error").html("The name of this site is <em>gifasm</em>. You need to upload a gif.").show();
+				}
+				return false;
 			},
 			addGif: function(src) {
-				var self = this;
-				var user = Parse.User.current();
-				var username = user.get("username");
-				var userid = user.id;
-				var tags = $("input[name=hidden-tags]").val();
-				var gif = new Gif();
-				gif.set("src", src);
-				gif.set("username", username);
-				gif.set("userid", userid);
-				if (tags) {
-					var tags = tags.split(',');
-					gif.set("tags", tags);
+				//check if url is a gif
+				var str = src.substr(-5);
+				console.log(str);
+				if (str.indexOf(".gif") >= 0) {
+					var self = this;
+					var user = Parse.User.current();
+					var username = user.get("username");
+					var userid = user.id;
+					var tags = $("input[name=hidden-tags]").val();
+					var gif = new Gif();
+					gif.set("src", src);
+					gif.set("username", username);
+					gif.set("userid", userid);
+					if (tags) {
+						var tags = tags.split(',');
+						gif.set("tags", tags);
+					} else {
+						alert('notags')
+					};
+					gif.save(null, {
+						success: function(newgif) {
+							self.addToUser(newgif);
+							app.navigate("/gif/"+newgif.id+"", {trigger: true});
+							delete self;
+					  	},
+						error: function() {
+							alert('error creating new gif')
+						}
+					});
 				} else {
-					alert('notags')
-				};
-				gif.save(null, {
-					success: function(newgif) {
-						self.addToUser(newgif);
-						app.navigate("/gif/"+newgif.id+"", {trigger: true});
-						delete self;
-				  	},
-					error: function() {
-						alert('error creating new gif')
-					}
-				});
+					alert('not a gif');
+				}
 			},
 			addUrl: function() {
 			  	var urltoadd = this.$("input#urladdsrc").val();
@@ -475,6 +521,20 @@ $(function(){
 				});
 			}
 		});
+		
+		//about view
+		AboutView = Parse.View.extend({
+			el: $('.content'),
+			template: _.template($('#about-template').html()),
+			initialize: function() {
+			  _.bindAll(this);
+			  this.render();
+			},
+			render: function() {
+				// $(".content > div").empty();
+			  	$(this.el).html(this.template());
+			}
+		});
 
 		//app view
 		AppView = Parse.View.extend({
@@ -486,10 +546,10 @@ $(function(){
 		    render: function() {
 				var currentUser = Parse.User.current();
 				if (currentUser) {
-					new LoggedInView();
+					new UserView();
 					new UploadView();
 				} else {
-					new LoggedOutView();
+					new NonuserView();
 				}
 				new SearchView();
 		    }
@@ -501,8 +561,9 @@ $(function(){
 		routes: {
 			""    :    "home",
 			"gif/:id" : "singleGif",
-			":username" : "userGallery",
-			"tag/:tag" : "tagGallery"
+			"user/:username" : "userGallery",
+			"tag/:tag" : "tagGallery",
+			"about" : "about"
 		},
 		initialize: function() {
 	        new AppView();
@@ -524,6 +585,9 @@ $(function(){
 			new TagGifsView({
 				tag: tag
 			});
+		}, 
+		about: function() {
+			new AboutView();
 		}
 	});
 	
