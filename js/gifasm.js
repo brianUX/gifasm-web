@@ -1,8 +1,6 @@
 $(function(){
-
-	Parse.initialize("lwRB5rPvenfJwKYSeDtnCsXj4WNZa3PuwAyAIN3P", "D7k2Ttgt6bzQhGhV3BWRAz42EKSKjZvBaevdl7fU");
 	
-		var count= 0;
+	Parse.initialize("lwRB5rPvenfJwKYSeDtnCsXj4WNZa3PuwAyAIN3P", "D7k2Ttgt6bzQhGhV3BWRAz42EKSKjZvBaevdl7fU");
 	
 	//models
 	var Gif = Parse.Object.extend("Gif");
@@ -15,7 +13,7 @@ $(function(){
 	
 		//all gifs view
 		AllGifsView = Parse.View.extend({
-			el: $('.content .gif-all'),
+			el: $('.content'),
 			template: _.template($('#gallery-gif-template').html()),
 			initialize: function(){
 				_.bindAll(this, "sizer");
@@ -23,7 +21,7 @@ $(function(){
 				this.query = new Gifs();
 				this.query.fetch({
 					success: function(gifs) {
-						$('.content .gif-all').empty();
+						$('.content').empty();
 						self.render(gifs);
 					},
 					error: function(collection, error) {
@@ -42,9 +40,7 @@ $(function(){
 					};
 					$(self.el).prepend(self.template(data));
 				});
-				new PlayGallery({
-					el: $('.content .gif-all')
-				});
+				new PlayGallery();
 				this.sizer();
 			},
 			sizer: function() {
@@ -57,7 +53,7 @@ $(function(){
 				});
 				$(window).resize(function(){
 					var width = window.innerWidth;
-					var height = window.innerHeight -64;
+					var height = window.innerHeight - 64;
 					var gifs = $(".content .gif-container img");
 					gifs.css({
 						"width": width,
@@ -69,7 +65,7 @@ $(function(){
 		
 		//user gifs view
 		UserGifsView = Parse.View.extend({
-			el: $('.content .gif-user'),
+			el: $('.content'),
 			template: _.template($('#gallery-gif-template').html()),
 			initialize: function(){
 				_.bindAll(this, "sizer");
@@ -80,7 +76,7 @@ $(function(){
 				gifs.matches("username", username);
 				gifs.find({
 					success: function(gifs) {
-						$('.content .gif-user').empty();
+						$('.content').empty();
 						self.render(gifs);
 					}, 
 					error: function() {
@@ -99,9 +95,7 @@ $(function(){
 						};
 						$(self.el).prepend(self.template(data));
 					});	
-					new PlayGallery({
-						el: $('.content .gif-user')
-					});
+					new PlayGallery();
 					this.sizer();
 				} else {
 					alert("this user has no gifs");
@@ -117,19 +111,22 @@ $(function(){
 				});
 				$(window).resize(function(){
 					var width = window.innerWidth;
-					var height = window.innerHeight -64;
+					var height = window.innerHeight - 64;
 					var gifs = $(".content .gif-container img");
 					gifs.css({
 						"width": width,
 						"height": height
 					});
 				});
+			},
+			reset: function() {
+				this.remove();
 			}
 		});
 		
 		//tagged gifs view
 		TagGifsView = Parse.View.extend({
-			el: $('.content .gif-tag'),
+			el: $('.content'),
 			template: _.template($('#gallery-gif-template').html()),
 			initialize: function (){
 				_.bindAll(this, "sizer");
@@ -140,7 +137,7 @@ $(function(){
 				query.equalTo("tags", tag);
 				query.find({
 					success: function(gifs) {
-						$('.content .gif-tag').empty();
+						$('.content').empty();
 						self.render(gifs);
 					}, 
 					error: function() {
@@ -159,10 +156,8 @@ $(function(){
 						};
 						$(self.el).prepend(self.template(data));
 					});	
-					new PlayGallery({
-						el: $('.content .gif-tag')
-					});
 					this.sizer();
+					new PlayGallery();
 				} else {
 					alert("couldnt find any gifs with that tag");
 				}
@@ -177,7 +172,7 @@ $(function(){
 				});
 				$(window).resize(function(){
 					var width = window.innerWidth;
-					var height = window.innerHeight -64;
+					var height = window.innerHeight - 64;
 					var gifs = $(".content .gif-container img");
 					gifs.css({
 						"width": width,
@@ -189,13 +184,11 @@ $(function(){
 		
 			//play gallery
 			PlayGallery = Parse.View.extend({
-				events: {
-		     		"click a.gif": "next"
-				},
+				el: $(".content"),
 				initialize: function() {
-					_.bindAll(this, "next");
-					this.element = this.options.el;
-					var item = this.element.find(".gallery-gif");
+					_.bindAll(this);
+					this.element = $(".content");
+					var item = this.element.find(".gif-container");
 					var size = item.length;
 					//load first five gifs
 					if (size < 5) {
@@ -215,35 +208,13 @@ $(function(){
 					}
 					//show first one
 					item.eq(0).removeClass("hide");		
-				},
-				next: function() {
-					console.log(this);
-					var current = this.element.find(".gif-container:visible");
-					var nextdex = current.index() + 1;
-					var next = this.element.find(".gif-container:eq("+nextdex+")");
-					//hide current
-					current.addClass("hide");
-					//show next
-					if (next.length) {
-						next.removeClass("hide");
-						//load next unloaded gif
-						var ondeck = $(".content .gif-container.unloaded").eq(0);
-						if (ondeck.length) {
-							ondeck.removeClass("unloaded").addClass("loaded");
-							var img = ondeck.find("img");
-							var src = img.attr("data-src");
-							img.attr("src", src);
-						}
-					} else {
-						$(".content .gallery-gif").eq(0).removeClass("hide");
-					}
 				}
 			});
 			
 		
 		//single gif view
 		SingleGifView = Parse.View.extend({
-			el: $('.content .gif-single'),
+			el: $('.content'),
 			template: _.template($('#single-gif-template').html()),
 			initialize: function(){
 				_.bindAll(this, "sizer");
@@ -252,7 +223,6 @@ $(function(){
 				this.gif = new Parse.Query(singleGif);
 				this.gif.get(this.options.gif, {
 				  	success: function(gif) {
-						$('.content .gif-single').empty();
 						self.render(gif);
 						var tags = gif.attributes.tags;
 				  	},
@@ -310,7 +280,7 @@ $(function(){
 					app.navigate("/tag/"+query+"", {trigger: true});	
 				}
 		    	return false;
-				delete this;
+				this.remove();
 		    }
 		});
 	
@@ -353,7 +323,7 @@ $(function(){
 			    success: function(user) {
 			      new UserView();
 				  new UploadView();
-			      delete self;
+			      // self.remove();
 			    },
 			    error: function(user, error) {
 			      self.$(".login-form .error").html("Invalid username or password. Please try again.").show();
@@ -371,7 +341,7 @@ $(function(){
 			  Parse.User.signUp(username, password, { ACL: new Parse.ACL() }, {
 			    success: function(user) {
 				  new UserView();
-				  delete self;
+				  // self.remove();
 			    },
 			    error: function(user, error) {
 			      self.$(".signup-form .error").html(error.message).show();
@@ -404,7 +374,7 @@ $(function(){
 			logOut: function(e) {
 		        Parse.User.logOut();
 		        new NonuserView();
-		        delete this;
+		        // this.remove();
 		    }
 		});
 		
@@ -469,9 +439,9 @@ $(function(){
 				return false;
 			},
 			addGif: function(src) {
+				var self = this;
 				//check if url is a gif
 				var str = src.substr(-5);
-				console.log(str);
 				if (str.indexOf(".gif") >= 0) {
 					var self = this;
 					var user = Parse.User.current();
@@ -492,7 +462,7 @@ $(function(){
 						success: function(newgif) {
 							self.addToUser(newgif);
 							app.navigate("/gif/"+newgif.id+"", {trigger: true});
-							delete self;
+							self.remove();
 					  	},
 						error: function() {
 							alert('error creating new gif')
@@ -553,8 +523,7 @@ $(function(){
 				}
 				new SearchView();
 		    }
-		});
-		
+		});		
 	
 	//router
 	var AppRouter = Parse.Router.extend({
@@ -593,5 +562,28 @@ $(function(){
 	
 	var app = new AppRouter();
 	Parse.history.start();
+	
+	//global functions
+	$(".content .gallery-gif a.gif").live("click", function(){
+		var current = $(this).parent(".gallery-gif");
+		var nextdex = current.index() + 1;
+		var next = $(".content").find(".gif-container:eq("+nextdex+")");
+		//hide current
+		current.addClass("hide");
+		//show next
+		if (next.length) {
+			next.removeClass("hide");
+			//load next unloaded gif
+			var ondeck = $(".content .gif-container.unloaded").eq(0);
+			if (ondeck.length) {
+				ondeck.removeClass("unloaded").addClass("loaded");
+				var img = ondeck.find("img");
+				var src = img.attr("data-src");
+				img.attr("src", src);
+			}
+		} else {
+			$(".content .gallery-gif").eq(0).removeClass("hide");
+		}
+	});
 	
 });
