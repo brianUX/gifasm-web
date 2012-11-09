@@ -110,13 +110,32 @@ body{
 			.loggedin {
 				.avatar {
 					float:right;
-					width:100px;
-					a {
-						color:#fff;
-						font-size:24px;
-						&.log-out {
-							color:#1f6fc8;
-							font-size:12px;
+					width:75px;
+					top:1px;
+					.pic {
+						padding:15px 9px 16px;
+						border:1px solid #252525;
+						background:#f3f3f3;
+						@include border-radius(4px);
+						&:active {
+							position:relative;
+							top:1px;
+						}
+					}
+					.caret {
+						border-top-color:#c6c6c6;
+						position:relative;
+						top:8px;
+						left:5px;
+					}
+					ul {
+						top: 42px;
+						left: -92px;
+						li {
+							a:hover {
+								background:#f1f1f1;
+								color:#333;
+							}
 						}
 					}
 				}
@@ -124,19 +143,75 @@ body{
 					float:left;
 					margin-right:30px;
 					#add-modal {
-						.main {
+						.modal-body {
+							overflow:hidden;
+						}
+						.roe {
+							width:530px;
+							float:left;
+							line-height:19px;
+						}
+						.input {
+							float:left;
 							color: #555;
-							font-size: 12px;
-							width: 280px;
+							font-size: 13px;
+							background:whiteSmoke;
+							border:1px solid #CCC;
+							padding:13px;
+							width: 326px;
+							@include border-radius(4px);
+							margin:0;
+							input {
+								height: 100%;
+								font-size: 12px;
+								padding: 0;
+								margin: 0;
+								line-height: 0;
+								width: 300px;
+								background:whiteSmoke;
+								border:0;
+								@include box-shadow(none);
+							}
+							&.urladdsrc {
+								background:#fff;
+							}
 						}
-						.tags {
-							margin-top:14px;
+						button.add-gif {
+							top: 0px;
+							float: left;
+							margin-left: 10px;
+							padding: 12px 21px 13px;
+							font-size: 16px;
 						}
-						button {
-							top:-1px;
+						.roe-tag {
+							position:relative;
+							padding:0 0 0 210px;
+							margin-bottom:10px;
+							height:48px;
+							.myTag {
+								float: left;
+								margin: 14px 0 0 10px;
+								background:#f1f1f1;
+								height: 22px;
+								border-color: #ccc;
+								padding: 6px 9px 5px;
+								font-size: 14px;
+								color: #343434;
+							}
+							.tags {
+								top:14px;
+								position:absolute;
+								left:0;
+								display:block !important;
+							}
 						}
-						.myTag {
-							float:right;
+						.roe-last {
+							height:40px;
+							.help-block {
+								width:100%;
+								float:left;
+								font-size:13px;
+							}
 						}
 					}
 				}

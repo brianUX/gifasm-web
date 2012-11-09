@@ -207,7 +207,9 @@ $(function(){
 						});
 					}
 					//show first one
-					item.eq(0).removeClass("hide");		
+					item.eq(0).removeClass("hide");
+					// var gifid = item.eq(0).attr('id');	
+					// app.navigate("gif/"+gifid+"", {trigger: false});	
 				}
 			});
 			
@@ -277,7 +279,7 @@ $(function(){
 			search: function() {
 				var query = $("form.search input").val();
 				if (query) {
-					app.navigate("/tag/"+query+"", {trigger: true});	
+					app.navigate("tag/"+query+"", {trigger: true});	
 				}
 		    	return false;
 				this.remove();
@@ -362,13 +364,13 @@ $(function(){
 			},
 			initialize: function() {
 			    _.bindAll(this, "logOut");
-			    this.user = Parse.User.current();
-				username = this.user.get("username");
+			    user = Parse.User.current();
+				this.username = user.get("username");
 			    this.render();
 			},
 			render: function() {
 			  	$(this.el).html(this.template({ 
-					username: username
+					username: this.username
 				 }));
 			},
 			logOut: function(e) {
@@ -400,6 +402,9 @@ $(function(){
 				});
 				$("form.add span a").click(function() {
 					$("form.add").toggle();
+					if ($("form#urladd:visible")) {
+						$("form#urladd .urladdsrc").focus().val("");
+					}
 				});
 			},
 			grabFile: function(e) {
@@ -461,7 +466,7 @@ $(function(){
 					gif.save(null, {
 						success: function(newgif) {
 							self.addToUser(newgif);
-							app.navigate("/gif/"+newgif.id+"", {trigger: true});
+							app.navigate("gif/"+newgif.id+"", {trigger: true});
 							self.remove();
 					  	},
 						error: function() {
@@ -572,7 +577,11 @@ $(function(){
 		current.addClass("hide");
 		//show next
 		if (next.length) {
+			//show next
 			next.removeClass("hide");
+			//update url
+			var gifid = next.attr('id');
+			// app.navigate("gif/"+gifid+"", {trigger: false});	
 			//load next unloaded gif
 			var ondeck = $(".content .gif-container.unloaded").eq(0);
 			if (ondeck.length) {

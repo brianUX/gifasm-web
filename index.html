@@ -88,7 +88,7 @@
 							<input type="text" id="login-username" placeholder="Username" />
 							<input type="password" id="login-password" placeholder="Password" />
 							<button class="btn btn-primary" type="button submit">Log In</button>
-							<span class="help-block">Don't have an account? <a href="#" id="signup">Make one</a></span>
+							<span class="help-block">Don&#8217;t have an account? <a href="#" id="signup">Make one</a></span>
 						</form>
 				    </div>
 				</div>
@@ -112,15 +112,20 @@
 	
 		<script type="text/template" id="user-template">
 			<div class="loggedin">
-				<div class="avatar">
-		      		<a href="#/user/<%= username %>"><%= username %></a> (<a href="#" class="log-out">Log out</a>)
+				<div class="avatar dropdown">
+	               <a href="#" class="dropdown-toggle pic" data-toggle="dropdown"><img src="img/avatar-default.png"></a><a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
+	               <ul class="dropdown-menu">
+						<li><a href="#/user/<%= username %>"><%= username %></a></li>
+						<li class="divider"></li>
+						<li><a href="#" class="log-out">Log out</a></li>
+	               </ul>
 		      	</div>
 				<div class="add"></div>
 			</div>
 		</script>
 		
 		<script type="text/template" id="upload-template">
-			<a href="#add-modal" role="button" class="btn btn-primary" data-toggle="modal">Add Gif</a>
+			<a href="#add-modal" role="button" class="btn btn-primary" data-toggle="modal" title="add gif">+ add gif</a>
 			<div class="modal hide" id="add-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
 				<div class="modal-header">
 			    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -128,18 +133,30 @@
 			  	</div>
 				<div class="modal-body">
 					<form id="fileupload" class="add" enctype="multipart/form-data" method="post">
-						<p class="error text-error" style="display:none"></p>
-					    <input type="file" name="fileselect" id="fileselect" class="btn main">
-						<button class="btn btn-primary" type="button submit">Add</button>
-						<input type="text" name="tags" placeholder="Tags" class="tags"/>
-					    <span class="help-block"><a href="#">Use a URL instead</a></span>
+						<div class="roe">
+							<p class="error text-error" style="display:none"></p>
+					    	<div class="input"><input type="file" accept="image/gif" name="fileselect" id="fileselect" class="btn main"></div>
+							<button class="btn btn-primary add-gif" type="button submit">Add</button>
+						</div>
+						<div class="roe roe-tag">
+							<input type="text" name="tags" placeholder="Tags" class="tags"/>
+						</div>
+						<div class="roe roe-last">
+							<span class="help-block"><a href="#">Use a URL instead</a></span>
+						</div>
 					</form>
 					<form id="urladd" class="add hide">
-				    	<p class="error text-error" style="display:none"></p>
-					    <input type="text" id="urladdsrc" class="main" value="http://">
-				        <button class="btn btn-primary" type="button submit">Add</button>
-				     	<input type="text" name="tags" placeholder="Tags" class="tags"/>
-						<span class="help-block"><a href="#">Uploader</a></span>
+						<div class="roe">
+				    		<p class="error text-error" style="display:none"></p>
+					    	<input type="text" class="main input urladdsrc" placeholder="http://">
+							<button class="btn btn-primary add-gif" type="button submit">Add</button>
+						</div>
+						<div class="roe roe-tag">
+				     		<input type="text" name="tags" placeholder="Tags" class="tags"/>
+						</div>
+						<div class="roe roe-last">
+							<span class="help-block"><a href="#">Uploader</a></span>
+						</div>
 					</form>
 				</div>
 			</div>
