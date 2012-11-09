@@ -47,7 +47,7 @@
 				</a>
 				<div class="tags">
 					<% for(var tag in tags) { %>
-			        	<span class="label label-inverse"><a href="#/tag/<%= tags[tag] %>"><%= tags[tag] %></a></span>
+			        	<span class="label label-inverse"><a href="#/tag/<% var tagsurl = tags[tag].replace(/\s+/g, '-').toLowerCase(); %><%= tagsurl %>"><%= tags[tag] %></a></span>
 			    	<% } %>
 				</div>
 			</div>

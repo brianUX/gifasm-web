@@ -45,7 +45,7 @@ $(function(){
 			},
 			sizer: function() {
 				var width = window.innerWidth;
-				var height = window.innerHeight - 64;
+				var height = window.innerHeight;
 				var gifs = $(".content .gif-container img");
 				gifs.css({
 					"width": width,
@@ -53,7 +53,7 @@ $(function(){
 				});
 				$(window).resize(function(){
 					var width = window.innerWidth;
-					var height = window.innerHeight - 64;
+					var height = window.innerHeight;
 					var gifs = $(".content .gif-container img");
 					gifs.css({
 						"width": width,
@@ -103,7 +103,7 @@ $(function(){
 			},
 			sizer: function() {
 				var width = window.innerWidth;
-				var height = window.innerHeight - 64;
+				var height = window.innerHeight;
 				var gifs = $(".content .gif-container img");
 				gifs.css({
 					"width": width,
@@ -111,7 +111,7 @@ $(function(){
 				});
 				$(window).resize(function(){
 					var width = window.innerWidth;
-					var height = window.innerHeight - 64;
+					var height = window.innerHeight;
 					var gifs = $(".content .gif-container img");
 					gifs.css({
 						"width": width,
@@ -164,7 +164,7 @@ $(function(){
 			},
 			sizer: function() {
 				var width = window.innerWidth;
-				var height = window.innerHeight - 64;
+				var height = window.innerHeight;
 				var gifs = $(".content .gif-container img");
 				gifs.css({
 					"width": width,
@@ -172,7 +172,7 @@ $(function(){
 				});
 				$(window).resize(function(){
 					var width = window.innerWidth;
-					var height = window.innerHeight - 64;
+					var height = window.innerHeight;
 					var gifs = $(".content .gif-container img");
 					gifs.css({
 						"width": width,
@@ -244,7 +244,7 @@ $(function(){
 			},
 			sizer: function() {
 				var width = window.innerWidth;
-				var height = window.innerHeight - 64;
+				var height = window.innerHeight;
 				var gifs = $(".content .gif-container img");
 				gifs.css({
 					"width": width,
@@ -556,6 +556,7 @@ $(function(){
 			});
 		},
 		tagGallery: function(tag) {
+			var tag = tag.replace(/-/g, " ");
 			new TagGifsView({
 				tag: tag
 			});
