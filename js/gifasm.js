@@ -311,7 +311,7 @@ $(function(){
 				"click #login": "showLogin",
 				"click #signup": "showSignup",
 			    "submit form.login-form": "logIn",
-			    "submit form.signup-form": "signUp",
+			    "submit form.signup-form": "signUp"
 			},
 			initialize: function() {
 			    _.bindAll(this, "showLogin", "showSignup", "logIn", "signUp");
