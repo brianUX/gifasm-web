@@ -495,7 +495,7 @@ $(function(){
 							self.addToUser(newgif);
 							$(".modal").modal('hide');
 							_gaq.push(['_trackEvent', 'Added Gif', '', '']);
-							window.location = "#gif/"+newgif.id+"";
+							window.location = "/#/gif/"+newgif.id+"";
 					  	},
 						error: function() {
 							new ErrorView({
