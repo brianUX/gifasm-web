@@ -25,8 +25,10 @@ $(function(){
 						self.render(gifs);
 					},
 					error: function(collection, error) {
-					    // The collection could not be retrieved.
-						alert('could not fetch all gif collection');
+					    new ErrorView({
+							title: "Error 420",
+							message: "You're not high enough."
+						});
 					}
 				});
 			},
@@ -45,7 +47,7 @@ $(function(){
 			},
 			sizer: function() {
 				var width = window.innerWidth;
-				var height = window.innerHeight;
+				var height = window.innerHeight - 64;
 				var gifs = $(".content .gif-container img");
 				gifs.css({
 					"width": width,
@@ -53,7 +55,7 @@ $(function(){
 				});
 				$(window).resize(function(){
 					var width = window.innerWidth;
-					var height = window.innerHeight;
+					var height = window.innerHeight - 64;
 					var gifs = $(".content .gif-container img");
 					gifs.css({
 						"width": width,
@@ -80,7 +82,10 @@ $(function(){
 						self.render(gifs);
 					}, 
 					error: function() {
-						alert('couldnt find user gifs');
+						new ErrorView({
+							title: "Fuck.",
+							message: "Something bad happened. Try again."
+						});
 					}
 				});
 			},
@@ -98,12 +103,15 @@ $(function(){
 					new PlayGallery();
 					this.sizer();
 				} else {
-					alert("this user has no gifs");
+					new ErrorView({
+						title: "Fuck.",
+						message: "We couldn't find any gifs from that user. Try again."
+					});
 				}
 			},
 			sizer: function() {
 				var width = window.innerWidth;
-				var height = window.innerHeight;
+				var height = window.innerHeight - 64;
 				var gifs = $(".content .gif-container img");
 				gifs.css({
 					"width": width,
@@ -111,7 +119,7 @@ $(function(){
 				});
 				$(window).resize(function(){
 					var width = window.innerWidth;
-					var height = window.innerHeight;
+					var height = window.innerHeight - 64;
 					var gifs = $(".content .gif-container img");
 					gifs.css({
 						"width": width,
@@ -141,7 +149,10 @@ $(function(){
 						self.render(gifs);
 					}, 
 					error: function() {
-						alert('couldnt grab any gifs by tag');
+						new ErrorView({
+							title: "Fuck",
+							message: "Crazy error, bro. Try again."
+						});
 					}
 				});
 			},
@@ -159,12 +170,15 @@ $(function(){
 					this.sizer();
 					new PlayGallery();
 				} else {
-					alert("couldnt find any gifs with that tag");
+					new ErrorView({
+						title: "Nada",
+						message: "No gifs with that tag, bro. You should add some."
+					});
 				}
 			},
 			sizer: function() {
 				var width = window.innerWidth;
-				var height = window.innerHeight;
+				var height = window.innerHeight - 64;
 				var gifs = $(".content .gif-container img");
 				gifs.css({
 					"width": width,
@@ -172,7 +186,7 @@ $(function(){
 				});
 				$(window).resize(function(){
 					var width = window.innerWidth;
-					var height = window.innerHeight;
+					var height = window.innerHeight - 64;
 					var gifs = $(".content .gif-container img");
 					gifs.css({
 						"width": width,
@@ -229,7 +243,10 @@ $(function(){
 						var tags = gif.attributes.tags;
 				  	},
 				  	error: function(gif, error) {
-						alert('shit');
+						new ErrorView({
+							title: "Sorry",
+							message: "We couldn't find that gif, bro."
+						});
 				  	}
 				});
 			},
@@ -244,7 +261,7 @@ $(function(){
 			},
 			sizer: function() {
 				var width = window.innerWidth;
-				var height = window.innerHeight;
+				var height = window.innerHeight - 64;
 				var gifs = $(".content .gif-container img");
 				gifs.css({
 					"width": width,
@@ -294,10 +311,12 @@ $(function(){
 				"click #login": "showLogin",
 				"click #signup": "showSignup",
 			    "submit form.login-form": "logIn",
-			    "submit form.signup-form": "signUp"
+			    "submit form.signup-form": "signUp",
 			},
 			initialize: function() {
 			    _.bindAll(this, "showLogin", "showSignup", "logIn", "signUp");
+				$('#signup-modal').modal();
+				$('#login-modal').modal();
 			    this.render();
 			},
 			render: function() {
@@ -305,16 +324,12 @@ $(function(){
 			},
 			showLogin: function() {
 				$('#signup-modal').modal('hide');
-				$('#login-modal').modal({
-					backdrop: false
-				});
+				$('#login-modal').modal('show');
 				$("#login-username").focus();
 			},
 			showSignup: function() {
 				$('#login-modal').modal('hide');
-				$('#signup-modal').modal({
-					backdrop: false
-				});
+				$('#signup-modal').modal('show');
 				$("#signup-username").focus();
 			},
 			logIn: function(e) {
@@ -323,35 +338,25 @@ $(function(){
 			  var password = this.$("#login-password").val();
 			  Parse.User.logIn(username, password, {
 			    success: function(user) {
-			      new UserView();
-				  new UploadView();
-			      // self.remove();
+					self.username = user.attributes.username;
+					new UserView({
+						username: self.username
+					});
+				    new UploadView();
+					$(".modal").modal('hide');
+					_gaq.push(['_trackEvent', 'Login', '', '']);
+			      	// self.remove();
 			    },
 			    error: function(user, error) {
 			      self.$(".login-form .error").html("Invalid username or password. Please try again.").show();
-			      this.$(".login-form button").removeAttr("disabled");
+			      self.$(".login-form button").removeAttr("disabled");
 			    }
 			  });
 			  this.$(".login-form button").attr("disabled", "disabled");
 			  return false;
 			},
 			signUp: function(e) {
-			  var self = this;
-			  var username = this.$("#signup-username").val();
-			  var password = this.$("#signup-password").val();
-
-			  Parse.User.signUp(username, password, { ACL: new Parse.ACL() }, {
-			    success: function(user) {
-				  new UserView();
-				  // self.remove();
-			    },
-			    error: function(user, error) {
-			      self.$(".signup-form .error").html(error.message).show();
-			      this.$(".signup-form button").removeAttr("disabled");
-			    }
-			  });
-			  this.$(".signup-form button").attr("disabled", "disabled");
-			  return false;
+				return false;	
 			}
 	    });
 	
@@ -364,17 +369,38 @@ $(function(){
 			},
 			initialize: function() {
 			    _.bindAll(this, "logOut");
-			    user = Parse.User.current();
-				this.username = user.get("username");
-			    this.render();
+				var self = this;
+				//get user shit
+				var currentUser = Parse.User.current();
+				var userid = currentUser.id;
+				var user = Parse.Object.extend("User");
+				var query = new Parse.Query(user);
+				query.get(userid, {
+					success: function(user) {
+						var username = user.attributes.username;
+						if (user.attributes.avatar) {
+							var avatar = user.attributes.avatar.url;
+						}
+						else {
+							var avatar = "img/avatar-default.png";
+						}
+						self.render(username,avatar);
+					},
+					error: function(object, error) {}
+				});
 			},
-			render: function() {
+			render: function(username,avatar) {
 			  	$(this.el).html(this.template({ 
-					username: this.username
-				 }));
+					username: username,
+					avatar: avatar
+				}));
+				new UploadView({
+					username: username
+				});
 			},
 			logOut: function(e) {
 		        Parse.User.logOut();
+				_gaq.push(['_trackEvent', 'Logout', '', '']);
 		        new NonuserView();
 		        // this.remove();
 		    }
@@ -397,8 +423,10 @@ $(function(){
 			},
 			render: function() {
 				this.$el.append(this.template);
-				$("form input.tags").tagsManager({
-					maxTags: 3
+				$("form input.tags").each(function(){
+					$(this).tagsManager({
+						maxTags: 3
+					});
 				});
 				$("form.add span a").click(function() {
 					$("form.add").toggle();
@@ -430,12 +458,13 @@ $(function(){
 						processData: false,
 						contentType: false,
 						success: function(data) {
-							console.log(data);
 							self.addGif(data.url);
 						},
 						error: function(data) {
-						  	var obj = jQuery.parseJSON(data);
-						  	alert(obj.error);
+						  	new ErrorView({
+								title: "Awww, Bro",
+								message: "We encountered an error. Try again."
+							});
 						}
 					});
 				} else {
@@ -450,9 +479,9 @@ $(function(){
 				if (str.indexOf(".gif") >= 0) {
 					var self = this;
 					var user = Parse.User.current();
-					var username = user.get("username");
 					var userid = user.id;
-					var tags = $("input[name=hidden-tags]").val();
+					var username = this.options.username;
+					var tags = $("form:visible input[name=hidden-tags]").val().toLowerCase();
 					var gif = new Gif();
 					gif.set("src", src);
 					gif.set("username", username);
@@ -460,25 +489,27 @@ $(function(){
 					if (tags) {
 						var tags = tags.split(',');
 						gif.set("tags", tags);
-					} else {
-						alert('notags')
-					};
+					}
 					gif.save(null, {
 						success: function(newgif) {
 							self.addToUser(newgif);
-							app.navigate("gif/"+newgif.id+"", {trigger: true});
-							self.remove();
+							$(".modal").modal('hide');
+							_gaq.push(['_trackEvent', 'Added Gif', '', '']);
+							window.location = "#gif/"+newgif.id+"";
 					  	},
 						error: function() {
-							alert('error creating new gif')
+							new ErrorView({
+								title: "Shit, Error.",
+								message: "We couldn't save that gif for you. Try again."
+							});
 						}
 					});
 				} else {
-					alert('not a gif');
+					var error = $("#urladd .error").html("That doesn't appear to be a gif. Try again, homey.").show();
 				}
 			},
 			addUrl: function() {
-			  	var urltoadd = this.$("input#urladdsrc").val();
+			  	var urltoadd = this.$("input.urladdsrc").val();
 				this.addGif(urltoadd);
 				return false;
 			}, 
@@ -487,62 +518,100 @@ $(function(){
 				var relation = user.relation("gifs");
 				relation.add(gif);
 				user.save(null, {
-					success: function() {
-
-					},
-					error: function() {
-						alert('error addToUser');
-					}
+					success: function() {},
+					error: function() {}
 				});
 			}
 		});
+
 		
-		//about view
-		AboutView = Parse.View.extend({
+		//error view
+		ErrorView = Parse.View.extend({
 			el: $('.content'),
-			template: _.template($('#about-template').html()),
+			template: _.template($('#error-template').html()),
 			initialize: function() {
 			  _.bindAll(this);
 			  this.render();
 			},
 			render: function() {
-				// $(".content > div").empty();
-			  	$(this.el).html(this.template());
+				var data = {
+					title: this.options.title,
+					message: this.options.message
+				};
+			  	$(this.el).html(this.template(data));
+				_gaq.push(['_trackPageview']);
+				_gaq.push(['_trackEvent', 'Error', '', '']);
 			}
 		});
+		
 
 		//app view
 		AppView = Parse.View.extend({
 			el: ".content",
+			events: {
+				"click div.gallery-gif" : "nextgif"
+			},
 			initialize: function() {
-				_.bindAll(this);
+				_.bindAll(this, "nextgif");
 		        this.render();
 		    },
 		    render: function() {
 				var currentUser = Parse.User.current();
 				if (currentUser) {
 					new UserView();
-					new UploadView();
 				} else {
 					new NonuserView();
 				}
 				new SearchView();
-		    }
-		});		
+		    },
+			nextgif: function() {
+				var current = $("div.gallery-gif:visible");
+				var nextdex = current.index() + 1;
+				var next = $(".content").find(".gif-container:eq("+nextdex+")");
+				//hide current
+				current.addClass("hide");
+				//show next
+				if (next.length) {
+					//show next
+					next.removeClass("hide");
+					//update url
+					var gifid = next.attr('id');
+					// app.navigate("gif/"+gifid+"", {trigger: false});	
+					//load next unloaded gif
+					var ondeck = $(".content .gif-container.unloaded").eq(0);
+					if (ondeck.length) {
+						ondeck.removeClass("unloaded").addClass("loaded");
+						var img = ondeck.find("img");
+						var src = img.attr("data-src");
+						img.attr("src", src);
+					}
+				} else {
+					$(".content .gallery-gif").eq(0).removeClass("hide");
+				}
+				_gaq.push(['_trackPageview']);
+			}
+		});	
+		
+			
 	
 	//router
 	var AppRouter = Parse.Router.extend({
 		routes: {
 			""    :    "home",
+			"all" : "all",
 			"gif/:id" : "singleGif",
 			"user/:username" : "userGallery",
 			"tag/:tag" : "tagGallery",
-			"about" : "about"
+			"about" : "about",
+			":whatever" : "404"
 		},
 		initialize: function() {
 	        new AppView();
 	    },
 		home: function() {
+			new AllGifsView();
+		},
+		all: function() {
 			new AllGifsView();
 		},
 		singleGif: function(id) {
@@ -557,43 +626,52 @@ $(function(){
 		},
 		tagGallery: function(tag) {
 			var tag = tag.replace(/-/g, " ");
+			var tag = tag.toLowerCase();
 			new TagGifsView({
 				tag: tag
 			});
 		}, 
-		about: function() {
-			new AboutView();
+		404: function() {
+			new ErrorView({
+				title: "Well, Fuck",
+				message: "We couldn't find that page."
+			});
 		}
 	});
 	
 	var app = new AppRouter();
 	Parse.history.start();
 	
-	//global functions
-	$(".content .gallery-gif a.gif").live("click", function(){
-		var current = $(this).parent(".gallery-gif");
-		var nextdex = current.index() + 1;
-		var next = $(".content").find(".gif-container:eq("+nextdex+")");
-		//hide current
-		current.addClass("hide");
-		//show next
-		if (next.length) {
-			//show next
-			next.removeClass("hide");
-			//update url
-			var gifid = next.attr('id');
-			// app.navigate("gif/"+gifid+"", {trigger: false});	
-			//load next unloaded gif
-			var ondeck = $(".content .gif-container.unloaded").eq(0);
-			if (ondeck.length) {
-				ondeck.removeClass("unloaded").addClass("loaded");
-				var img = ondeck.find("img");
-				var src = img.attr("data-src");
-				img.attr("src", src);
-			}
-		} else {
-			$(".content .gallery-gif").eq(0).removeClass("hide");
-		}
-	});
+	
+	
+	//global
+	
+		//signup
+		signUp = function() {
+		    var self = $(this);
+		    var username = $("form#signup #signup-username").val();
+		    var password = $("form#signup #signup-password").val();
+			//make new user
+			var user = new Parse.User();
+			user.set("username", username);
+			user.set("password", password);
+			user.signUp(null, {
+				success: function(user) {
+					var username = user.attributes.username;
+					new UserView({
+						username: username
+					});
+					new UploadView();
+					$(".modal").modal('hide');
+					_gaq.push(['_trackEvent', 'Signup', '', '']);
+				},
+				error: function(user, error) {
+					$("form#signup .error").html(error.message).show();
+					$("form#signup button").removeAttr("disabled");
+				}
+			});
+		    self.find(".signup-form button").attr("disabled", "disabled");
+		    return false;	
+		};
 	
 });

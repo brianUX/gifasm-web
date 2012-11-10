@@ -8,7 +8,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <title>Gifasm</title>
         <meta name="description" content="">
-        <meta name="viewport" content="width=device-width">
+        <meta name="viewport" content="width=728">
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
         <link rel="stylesheet" href="css/gifasm.css">
         <script src="js/vendor/modernizr-2.6.2.min.js"></script>
@@ -42,7 +42,7 @@
 		<!-- templates -->
 		<script type="text/template" id="gallery-gif-template">
 			<div class="gif-container gallery-gif hide unloaded" id="<%= id %>">
-				<a class="gif">
+				<a class="gif" title="next gif">
 					<img src="" data-src="<%= src %>">
 				</a>
 				<div class="tags">
@@ -55,7 +55,7 @@
 		
 		<script type="text/template" id="single-gif-template">
 			<div class="gif-container single-gif">
-				<a class="gif">
+				<a class="gif" href="#all">
 					<img src="<%= src %>">
 				</a>
 				<div class="tags">
@@ -77,7 +77,7 @@
 			<div class="notloggedin">
 			    <div id="login" class="btn btn-primary">Log in</div>
 				<div id="signup" class="btn btn-primary">Sign up</div>
-				<div class="modal hide" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+				<div class="modal hide" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 					<div class="modal-header">
 				    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 				    	<h3 id="myModalLabel">Log in</h3>
@@ -92,13 +92,13 @@
 						</form>
 				    </div>
 				</div>
-				<div class="modal hide" id="signup-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+				<div class="modal hide" id="signup-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 					<div class="modal-header">
 				    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 				    	<h3 id="myModalLabel">Sign up</h3>
 				  	</div>
 				    <div class="modal-body">
-						<form class="signup-form">
+						<form id="signup" class="signup-form" onsubmit="signUp();">
 							<p class="error text-error" style="display:none"></p>
 							<input type="text" id="signup-username" placeholder="Username" />
 							<input type="password" id="signup-password" placeholder="Create a Password" />
@@ -113,7 +113,7 @@
 		<script type="text/template" id="user-template">
 			<div class="loggedin">
 				<div class="avatar dropdown">
-	               <a href="#" class="dropdown-toggle pic" data-toggle="dropdown"><img src="img/avatar-default.png"></a><a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
+	               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img class="pic" src="<%= avatar %>"></a></a>
 	               <ul class="dropdown-menu">
 						<li><a href="#/user/<%= username %>"><%= username %></a></li>
 						<li class="divider"></li>
@@ -126,7 +126,7 @@
 		
 		<script type="text/template" id="upload-template">
 			<a href="#add-modal" role="button" class="btn btn-primary" data-toggle="modal" title="add gif">+ add gif</a>
-			<div class="modal hide" id="add-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+			<div class="modal hide" id="add-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 				<div class="modal-header">
 			    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 			    	<h3 id="myModalLabel">Add Gif</h3>
@@ -139,7 +139,7 @@
 							<button class="btn btn-primary add-gif" type="button submit">Add</button>
 						</div>
 						<div class="roe roe-tag">
-							<input type="text" name="tags" placeholder="Tags" class="tags"/>
+							<input type="text" name="tags" placeholder="Tags (max 3)" class="tags"/>
 						</div>
 						<div class="roe roe-last">
 							<span class="help-block"><a href="#">Use a URL instead</a></span>
@@ -152,7 +152,7 @@
 							<button class="btn btn-primary add-gif" type="button submit">Add</button>
 						</div>
 						<div class="roe roe-tag">
-				     		<input type="text" name="tags" placeholder="Tags" class="tags"/>
+				     		<input type="text" name="tags" placeholder="Tags (max 3)" class="tags"/>
 						</div>
 						<div class="roe roe-last">
 							<span class="help-block"><a href="#">Uploader</a></span>
@@ -162,12 +162,10 @@
 			</div>
 		</script>
 		
-		<script type="text/template" id="about-template">
-			<div class="container">
-				<h1>About</h1>
-				<p>Gifasm was created for the love of all things gif.</p> 
-				<p>Until now, the gif art movement has not had a dedicated user experience to properly share and explore gifs.</p>
-				<p>Started in 2012, NYC based Gifasm serves up over 2,000,000 animated gifs.</p>
+		<script type="text/template" id="error-template">
+			<div class="text-container">
+				<h1><%= title %></h1>
+				<p><%= message %></p> 
 			</div>
 		</script>
 
@@ -180,7 +178,7 @@
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
         <script>
-            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+            var _gaq=[['_setAccount','UA-36231761-1'],['_trackPageview']];
             (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
             g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
             s.parentNode.insertBefore(g,s)}(document,'script'));
