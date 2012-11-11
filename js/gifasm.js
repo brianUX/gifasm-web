@@ -325,12 +325,12 @@ $(function(){
 			showLogin: function() {
 				$('#signup-modal').modal('hide');
 				$('#login-modal').modal('show');
-				$("#login-username").focus();
+				// $("#login-username").focus();
 			},
 			showSignup: function() {
 				$('#login-modal').modal('hide');
 				$('#signup-modal').modal('show');
-				$("#signup-username").focus();
+				// $("#signup-username").focus();
 			},
 			logIn: function(e) {
 			  var self = this;
@@ -673,10 +673,5 @@ $(function(){
 		    self.find(".signup-form button").attr("disabled", "disabled");
 		    return false;	
 		};
-	
-		//clear url add on focus
-		$("input.urladdsrc").focus(function(){
-			$(this).select();
-		});
 	
 });
