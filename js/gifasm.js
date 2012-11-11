@@ -294,7 +294,7 @@ $(function(){
 			  	$(this.el).html(this.template());
 			},
 			search: function() {
-				var query = $("form.search input").val();
+				var query = $("form.search input").val().toLowerCase().replace(/ /g,"-");
 				if (query) {
 					app.navigate("tag/"+query+"", {trigger: true});	
 				}
@@ -495,8 +495,7 @@ $(function(){
 							self.addToUser(newgif);
 							$(".modal").modal('hide');
 							_gaq.push(['_trackEvent', 'Added Gif', '', '']);
-							self.remove();
-							window.location = "/#/gif/"+newgif.id+"";
+							app.navigate("#/gif/"+newgif.id+"", {trigger: true});	
 					  	},
 						error: function() {
 							new ErrorView({
@@ -674,5 +673,10 @@ $(function(){
 		    self.find(".signup-form button").attr("disabled", "disabled");
 		    return false;	
 		};
+	
+		//clear url add on focus
+		$("input.urladdsrc").focus(function(){
+			$(this).select();
+		});
 	
 });
