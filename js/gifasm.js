@@ -576,7 +576,7 @@ $(function(){
 					next.removeClass("hide");
 					//update url
 					var gifid = next.attr('id');
-					// app.navigate("gif/"+gifid+"", {trigger: false});	
+					app.navigate("/gif/"+gifid+"", {trigger: false});	
 					//load next unloaded gif
 					var ondeck = $(".content .gif-container.unloaded").eq(0);
 					if (ondeck.length) {
