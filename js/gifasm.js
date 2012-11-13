@@ -233,7 +233,7 @@ $(function(){
 			el: $('.content'),
 			template: _.template($('#single-gif-template').html()),
 			events: {
-				"click a.gif": "allGifs"
+				"click a.gif-one": "allGifs"
 			},
 			initialize: function(){
 				_.bindAll(this, "sizer", "allGifs");
