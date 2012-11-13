@@ -290,10 +290,11 @@ $(function(){
 			el: $('.search'),
 			template: _.template($('#search-template').html()),
 			events: {
-	     		"submit form.search": "search"
+	     		"submit form.search": "search",
+				"focus form.search input": "focus"
 			},
 			initialize: function() {
-			  _.bindAll(this, "search");
+			  _.bindAll(this, "search", "focus");
 			  this.render();
 			},
 			render: function() {
@@ -306,7 +307,13 @@ $(function(){
 				}
 		    	return false;
 				this.remove();
-		    }
+		    },
+			focus: function() {
+				$("form.search input").attr('placeholder', '');
+				$("form.search input").blur(function(){
+					$("form.search input").attr('placeholder', 'search the gifs');
+				});
+			}
 		});
 	
 		//nonuser view
