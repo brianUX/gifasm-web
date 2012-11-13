@@ -408,14 +408,15 @@ $(function(){
 			events: {
 				"change #fileselect": "grabFile",
 				"submit #fileupload": "uploadGif",
-				"submit #urladd": "addUrl"
+				"submit #urladd": "addUrl",
+				"click #add-modal-button": "showModal"
 			},
 			el: ".loggedin .add",
 			template: _.template($('#upload-template').html()),
 			appid: "lwRB5rPvenfJwKYSeDtnCsXj4WNZa3PuwAyAIN3P",
 			restkey: "LfkvpLyFErkF84FPPoZIOzOvSNH10jQI1meGnLEr",
 			initialize: function() {
-				_.bindAll(this, "uploadGif", "grabFile", "addGif", "addUrl", "addToUser");
+				_.bindAll(this, "uploadGif", "grabFile", "addGif", "addUrl", "addToUser", "showModal");
 			  	this.render();
 			},
 			render: function() {
@@ -525,6 +526,9 @@ $(function(){
 					success: function() {},
 					error: function() {}
 				});
+			},
+			showModal: function() {
+				$("#add-modal").modal("toggle");
 			}
 		});
 
