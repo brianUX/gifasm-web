@@ -232,8 +232,11 @@ $(function(){
 		SingleGifView = Parse.View.extend({
 			el: $('.content'),
 			template: _.template($('#single-gif-template').html()),
+			events: {
+				"click a.gif": "allGifs"
+			},
 			initialize: function(){
-				_.bindAll(this, "sizer");
+				_.bindAll(this, "sizer", "allGifs");
 				var self = this;
 				var singleGif = Parse.Object.extend("Gif");
 				this.gif = new Parse.Query(singleGif);
@@ -276,6 +279,9 @@ $(function(){
 						"height": height
 					});
 				});
+			},
+			allGifs: function() {
+				app.navigate("all", {trigger: true});	
 			}
 		});
 		
