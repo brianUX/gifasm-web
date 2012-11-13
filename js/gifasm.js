@@ -566,7 +566,7 @@ $(function(){
 					message: this.options.message
 				};
 			  	$(this.el).html(this.template(data));
-				_gaq.push(['_trackPageview']);
+				_gaq.push(['_trackPageview', 'error']);
 				_gaq.push(['_trackEvent', 'Error', 'error', '']);
 			}
 		});
@@ -616,7 +616,8 @@ $(function(){
 				} else {
 					$(".content .gallery-gif").eq(0).removeClass("hide");
 				}
-				_gaq.push(['_trackPageview']);
+				var thisURL = window.location.pathname;
+				_gaq.push(['_trackPageview', thisURL]);
 			}
 		});	
 		
