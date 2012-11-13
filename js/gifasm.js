@@ -616,7 +616,7 @@ $(function(){
 				} else {
 					$(".content .gallery-gif").eq(0).removeClass("hide");
 				}
-				var thisURL = window.location.href;
+				var thisURL = window.location.hash;
 				_gaq.push(['_trackPageview', thisURL]);
 			}
 		});	
