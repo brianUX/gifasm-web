@@ -422,14 +422,15 @@ $(function(){
 				"change #fileselect": "grabFile",
 				"submit #fileupload": "uploadGif",
 				"submit #urladd": "addUrl",
-				"click #add-modal-button": "showModal"
+				"click #add-modal-button": "showModal",
+				"focus .urladdsrc": "urlAddReset"
 			},
 			el: ".loggedin .add",
 			template: _.template($('#upload-template').html()),
 			appid: "lwRB5rPvenfJwKYSeDtnCsXj4WNZa3PuwAyAIN3P",
 			restkey: "LfkvpLyFErkF84FPPoZIOzOvSNH10jQI1meGnLEr",
 			initialize: function() {
-				_.bindAll(this, "uploadGif", "grabFile", "addGif", "addUrl", "addToUser", "showModal");
+				_.bindAll(this, "uploadGif", "grabFile", "addGif", "addUrl", "addToUser", "showModal", "urlAddReset");
 			  	this.render();
 			},
 			render: function() {
@@ -512,6 +513,8 @@ $(function(){
 								self.addToUser(newgif);
 							}
 							$(".modal").modal('hide');
+							$("span.myTag").remove();
+							$("input.urladdsrc").val('');
 							_gaq.push(['_trackEvent', 'Added Gif', 'added gif', '']);
 							app.navigate("#/gif/"+newgif.id+"", {trigger: true});	
 					  	},
@@ -542,6 +545,9 @@ $(function(){
 			},
 			showModal: function() {
 				$("#add-modal").modal("toggle");
+			},
+			urlAddReset: function() {
+
 			}
 		});
 
