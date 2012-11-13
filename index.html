@@ -24,7 +24,11 @@
 			</div>
 			<div class="right">
 				<div class="search"></div>
-				<div class="user"></div>
+				<div class="user">
+					<div class="loggedin">
+						<div class="add"></div>
+					</div>
+				</div>
 			</div>
 		</div>
 	
@@ -125,11 +129,11 @@
 		</script>
 		
 		<script type="text/template" id="upload-template">
-			<a href="#add-modal" role="button" class="btn btn-primary" data-toggle="modal" title="add gif">+ add gif</a>
+			<a href="#add-modal" role="button" class="btn btn-primary" data-toggle="modal" title="add gif">+ Add Gif</a>
 			<div class="modal hide" id="add-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 				<div class="modal-header">
 			    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-			    	<h3 id="myModalLabel">Add Gif</h3>
+			    	<h3 id="myModalLabel">Fuck Yeah, Buddy.</h3>
 			  	</div>
 				<div class="modal-body">
 					<form id="fileupload" class="add" enctype="multipart/form-data" method="post">
@@ -139,7 +143,7 @@
 							<button class="btn btn-primary add-gif" type="button submit">Add</button>
 						</div>
 						<div class="roe roe-tag">
-							<input type="text" name="tags" placeholder="Tags (max 3)" class="tags"/>
+							<input type="text" name="tags" placeholder="tags (max 3)" class="tags"/>
 						</div>
 						<div class="roe roe-last">
 							<span class="help-block"><a href="#">Use a URL instead</a></span>
@@ -152,7 +156,7 @@
 							<button class="btn btn-primary add-gif" type="button submit">Add</button>
 						</div>
 						<div class="roe roe-tag">
-				     		<input type="text" name="tags" placeholder="Tags (max 3)" class="tags"/>
+				     		<input type="text" name="tags" placeholder="tags (max 3)" class="tags"/>
 						</div>
 						<div class="roe roe-last">
 							<span class="help-block"><a href="#">Uploader</a></span>

@@ -344,7 +344,7 @@ $(function(){
 					});
 				    new UploadView();
 					$(".modal").modal('hide');
-					_gaq.push(['_trackEvent', 'Login', '', '']);
+					_gaq.push(['_trackEvent', 'Login', 'login', '']);
 			      	// self.remove();
 			    },
 			    error: function(user, error) {
@@ -394,13 +394,10 @@ $(function(){
 					username: username,
 					avatar: avatar
 				}));
-				new UploadView({
-					username: username
-				});
 			},
 			logOut: function(e) {
 		        Parse.User.logOut();
-				_gaq.push(['_trackEvent', 'Logout', '', '']);
+				_gaq.push(['_trackEvent', 'Logout', 'logout', '']);
 		        new NonuserView();
 		        // this.remove();
 		    }
@@ -479,8 +476,13 @@ $(function(){
 				if (str.indexOf(".gif") >= 0) {
 					var self = this;
 					var user = Parse.User.current();
-					var userid = user.id;
-					var username = this.options.username;
+					if (user) {
+						var userid = user.id;
+						var username = this.options.username;
+					} else {
+						var username = "anonymous"
+						var userid = "iPhqjAbg7C"
+					}
 					var tags = $("form:visible input[name=hidden-tags]").val().toLowerCase();
 					var gif = new Gif();
 					gif.set("src", src);
@@ -492,9 +494,11 @@ $(function(){
 					}
 					gif.save(null, {
 						success: function(newgif) {
-							self.addToUser(newgif);
+							if (Parse.User.current()) {
+								self.addToUser(newgif);
+							}
 							$(".modal").modal('hide');
-							_gaq.push(['_trackEvent', 'Added Gif', '', '']);
+							_gaq.push(['_trackEvent', 'Added Gif', 'added gif', '']);
 							app.navigate("#/gif/"+newgif.id+"", {trigger: true});	
 					  	},
 						error: function() {
@@ -540,7 +544,7 @@ $(function(){
 				};
 			  	$(this.el).html(this.template(data));
 				_gaq.push(['_trackPageview']);
-				_gaq.push(['_trackEvent', 'Error', '', '']);
+				_gaq.push(['_trackEvent', 'Error', 'error', '']);
 			}
 		});
 		
@@ -558,10 +562,11 @@ $(function(){
 		    render: function() {
 				var currentUser = Parse.User.current();
 				if (currentUser) {
-					new UserView();
+					// new UserView();
 				} else {
-					new NonuserView();
+					// new NonuserView();
 				}
+				new UploadView();
 				new SearchView();
 		    },
 			nextgif: function() {
@@ -663,7 +668,7 @@ $(function(){
 					});
 					new UploadView();
 					$(".modal").modal('hide');
-					_gaq.push(['_trackEvent', 'Signup', '', '']);
+					_gaq.push(['_trackEvent', 'Signup', 'signup', '']);
 				},
 				error: function(user, error) {
 					$("form#signup .error").html(error.message).show();
