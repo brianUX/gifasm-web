@@ -20,11 +20,12 @@
 
 		<div class="header">
 			<div class="left">
-				<h1><a href="#">Gifasm</a></h1>
+				<h1><a href="/">Gifasm</a></h1>
 			</div>
 			<div class="right">
 				<div class="search"></div>
 				<div class="user"></div>
+				<div class="title"></div>
 			</div>
 		</div>
 	
@@ -32,7 +33,7 @@
 			<div class="content"></div>
 		</div>
 		
-		<div class="error"></div>
+		<div class="error hide"></div>
 		
 		<!-- <div class="footer">
 			<span>&copy;Gifasm 2012</span>
@@ -64,12 +65,16 @@
 			</div>
 		</script>​
 		
-		<script type="text/template" id="top-gif-template">
+		<script type="text/template" id="gif-board-template">
 			<div class="user-gif">
 				<a class="gif">
 					<img src="<%= src %>" data-src="<%= src %>">
 				</a>
 			</div>
+		</script>
+		
+		<script type="text/template" id="title-board-template">
+			<h2><a href="#/<%= title %>"><%= title %></a></h2>
 		</script>
 		
 		<script type="text/template" id="single-gif-template">
@@ -134,7 +139,7 @@
 				<div class="avatar dropdown">
 	               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img class="pic" src="<%= avatar %>"></a></a>
 	               <ul class="dropdown-menu">
-						<li><a href="#/user/<%= username %>" class="username"><%= username %></a></li>
+						<li><a href="#/u/<%= username %>" class="username"><%= username %></a></li>
 						<li class="divider"></li>
 						<li><a href="#" class="log-out">Log out</a></li>
 	               </ul>

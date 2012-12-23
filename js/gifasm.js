@@ -11,42 +11,98 @@ $(function(){
 	
 	//views
 	
-		//all gifs view
-		AllGifsView = Parse.View.extend({
+		//board view
+		GifBoardView = Parse.View.extend({
+			el: $('.content'),
+			template: _.template($('#gif-board-template').html()),
+			initialize: function(){
+				_.bindAll(this);
+				$('.content').empty();
+				$('.error').empty();
+				var gifs = this.options.gifs;
+				this.render(gifs);
+			},
+			render: function(gifs){
+				var self = this;
+				if (gifs.length > 0) {
+					gifs.forEach(function(thisgif) {
+						if (self.options.source === "parse") {
+							var data = {
+								src: thisgif.attributes.src
+							};
+							$(self.el).prepend(self.template(data));
+						}
+						else if (self.options.source === "reddit") {
+							var data = {
+								src: thisgif.data.url
+							};
+							var str = thisgif.data.url;
+							if (str.indexOf(".gif") >= 0) {
+								$(self.el).append(self.template(data));
+							}
+						}
+					});	
+					console.log($('a.gif').size());
+					if  ($('a.gif').size() < 1) {
+						new ErrorView({
+							title: self.options.errorTitle,
+							message: self.options.errorMessage
+						});
+					}
+				} else {
+					new ErrorView({
+						title: self.options.errorTitle,
+						message: self.options.errorMessage
+					});
+				}
+			}
+		});
+		
+		//fullscreen view
+		GifFullView = Parse.View.extend({
 			el: $('.content'),
 			template: _.template($('#gallery-gif-template').html()),
 			initialize: function(){
 				_.bindAll(this, "sizer");
-				var self = this;
-				var Gifs = Parse.Object.extend("Gif");
-				var query = new Parse.Query(Gifs);
-				query.limit(1000);
-				query.ascending("createdAt");
-				query.find({
-					success: function(gifs) {
-						$('.content').empty();
-						self.render(gifs);
-					},
-					error: function(collection, error) {
-					    new ErrorView({
-							title: "Error 420",
-							message: "You're not high enough."
-						});
-					}
-				});
+				$('.content').empty();
+				$('.error').empty();
+				var gifs = this.options.gifs;
+				this.render(gifs);
 			},
 			render: function(gifs){
 				var self = this;
-				gifs.forEach(function(thisgif) {
-					var data = {
-						src: thisgif.attributes.src,
-						id: thisgif.id,
-						tags: thisgif.attributes.tags 
-					};
-					$(self.el).prepend(self.template(data));
-				});
-				new PlayGallery();
-				this.sizer();
+				if (gifs.length > 0) {
+					gifs.forEach(function(thisgif) {
+						if (self.options.source === "parse") {
+							var data = {
+								src: thisgif.attributes.src,
+								id: thisgif.id,
+								tags: thisgif.attributes.tags 
+							};
+							$(self.el).prepend(self.template(data));
+						}
+						else if (self.options.source === "reddit") {
+							var id = "reddit";
+							var tags = [''];
+							var data = {
+								src: thisgif.data.url,
+								id: id,
+								tags: tags
+							};
+							var str = thisgif.data.url;
+							if (str.indexOf(".gif") >= 0) {
+								$(self.el).append(self.template(data));
+							}
+						}
+					});
+					new PlayGallery();
+					self.sizer();
+				} else {
+					new ErrorView({
+						title: self.options.errorTitle,
+						message: self.options.errorMessage
+					});
+				}
 			},
 			sizer: function() {
 				var width = window.innerWidth;
@@ -67,52 +123,91 @@ $(function(){
 				});
 			}
 		});
+	
+		//all gifs view
+		AllGifsView = Parse.View.extend({
+			el: $('.title'),
+			template: _.template($('#title-board-template').html()),
+			initialize: function(){
+				_.bindAll(this);
+				var self = this;
+				var Gifs = Parse.Object.extend("Gif");
+				var query = new Parse.Query(Gifs);
+				query.limit(1000);
+				query.ascending("createdAt");
+				query.find({
+					success: function(gifs) {
+						new GifFullView({
+							source: "parse",
+							gifs: gifs,
+							errorTitle: 'Rats',
+							errorMessage: "We couldn't find any gifs, bro."
+						});
+					},
+					error: function(collection, error) {
+					    new ErrorView({
+							title: "Error 420",
+							message: "You're not high enough."
+						});
+					}
+				});
+			},
+			render: function(){
+				var self = this;
+				$('.title').empty();
+				var data = {
+					title: self.title
+				};
+				$(self.el).prepend(self.template(data));
+			}
+		});
 		
-		//top gifs view
-		TopGifsView = Parse.View.extend({
-			el: $('.content'),
-			template: _.template($('#top-gif-template').html()),
+		//reddit gifs view
+		RedditGifsView = Parse.View.extend({
+			el: $('.title'),
+			template: _.template($('#title-board-template').html()),
 			initialize: function(){
 				_.bindAll(this);
 				var self = this;
 				var username = this.options.username;
-				//grab top gifs
-				$.getJSON("http://www.reddit.com/r/gifs.json?jsonp=?",
-				 {
-				    format: "jsonp"
-				  },
-				  function(data) {
-						var x = data.data.children;
-						$('.content').empty();
-						self.render(x);
-				  });
-				$("#container .content").css('padding-top', '57px');
-			},
-			render: function(gifs){
-				var self = this;
-				if (gifs.length > 0) {
-					gifs.forEach(function(thisgif) {
-						var data = {
-							src: thisgif.data.url
-						};
-						var str = thisgif.data.url;
-						if (str.indexOf(".gif") >= 0) {
-							$(self.el).prepend(self.template(data));
-						}
-					});	
-				} else {
+				var subreddit = this.options.subreddit;
+				this.title = "r/"+subreddit+"";
+				//grab top gifs 
+				$.getJSON("http://www.reddit.com/"+this.title+".json?sort=hot&limit=100&jsonp=?", 
+					{
+				    	format: "jsonp"
+				 	},
+				  	function(data) {
+						var gifs = data.data.children;
+						new GifFullView({
+							source: "reddit",
+							gifs: gifs,
+							errorTitle: 'Nope',
+							errorMessage: "No popular gifs in <em>"+self.title+"</em> at the moment."
+						});
+			    	}
+				).error(function() {
 					new ErrorView({
-						title: "Fuck.",
-						message: "We couldn't find any gifs from that user. Try again."
+						title: "Bummer.",
+						message: "Doesn't look like <em>"+self.title+"</em> exists."
 					});
-				}
+				});
+				this.render();
+			},
+			render: function(){
+				var self = this;
+				$('.title').empty();
+				var data = {
+					title: self.title
+				};
+				$(self.el).prepend(self.template(data));
 			}
 		});
 		
 		//user gifs view
 		UserGifsView = Parse.View.extend({
-			el: $('.content'),
-			template: _.template($('#user-gif-template').html()),
+			el: $('.title'),
+			template: _.template($('#title-board-template').html()),
 			initialize: function(){
 				_.bindAll(this);
 				var self = this;
@@ -122,8 +217,12 @@ $(function(){
 				gifs.matches("username", username);
 				gifs.find({
 					success: function(gifs) {
-						$('.content').empty();
-						self.render(gifs);
+						new GifBoardView({
+							source: "parse",
+							gifs: gifs,
+							errorTitle: 'Damn',
+							errorMessage: "We couldn't find any gifs from <em>"+username+"</em>. Try again."
+						});
 					}, 
 					error: function() {
 						new ErrorView({
@@ -132,32 +231,22 @@ $(function(){
 						});
 					}
 				});
-				$("#container .content").css('padding-top', '57px');
+				this.render();
 			},
-			render: function(gifs){
+			render: function(){
 				var self = this;
-				if (gifs.length > 0) {
-					gifs.forEach(function(thisgif) {
-						var data = {
-							src: thisgif.attributes.src,
-							id: thisgif.id,
-							tags: thisgif.attributes.tags 
-						};
-						$(self.el).prepend(self.template(data));
-					});	
-				} else {
-					new ErrorView({
-						title: "Fuck.",
-						message: "We couldn't find any gifs from that user. Try again."
-					});
-				}
+				$('.title').empty();
+				var data = {
+					title: "u/"+self.options.username+""
+				};
+				$(self.el).prepend(self.template(data));
 			}
 		});
 		
 		//tagged gifs view
 		TagGifsView = Parse.View.extend({
-			el: $('.content'),
-			template: _.template($('#user-gif-template').html()),
+			el: $('.title'),
+			template: _.template($('#title-board-template').html()),
 			initialize: function (){
 				_.bindAll(this);
 				var self = this;
@@ -167,8 +256,12 @@ $(function(){
 				query.equalTo("tags", tag);
 				query.find({
 					success: function(gifs) {
-						$('.content').empty();
-						self.render(gifs);
+						new GifBoardView({
+							source: "parse",
+							gifs: gifs,
+							errorTitle: 'Nada',
+							errorMessage: "No gifs tagged <em>"+tag+"</em>, bro. You should add some."
+						});
 					}, 
 					error: function() {
 						new ErrorView({
@@ -177,25 +270,15 @@ $(function(){
 						});
 					}
 				});
-				$("#container .content").css('padding-top', '57px');
+				this.render();
 			},
-			render: function(gifs){
+			render: function(){
 				var self = this;
-				if (gifs.length > 0) {
-					gifs.forEach(function(thisgif) {
-						var data = {
-							src: thisgif.attributes.src,
-							id: thisgif.id,
-							tags: thisgif.attributes.tags 
-						};
-						$(self.el).prepend(self.template(data));
-					});
-				} else {
-					new ErrorView({
-						title: "Nada",
-						message: "No gifs with that tag, bro. You should add some."
-					});
-				}
+				$('.title').empty();
+				var data = {
+					title: "tag/"+self.options.tag+""
+				};
+				$(self.el).prepend(self.template(data));
 			}
 		});
 		
@@ -557,6 +640,7 @@ $(function(){
 			template: _.template($('#error-template').html()),
 			initialize: function() {
 			  _.bindAll(this);
+				$('.title').empty();
 			  this.render();
 			},
 			render: function() {
@@ -565,6 +649,7 @@ $(function(){
 					message: this.options.message
 				};
 			  	$(this.el).html(this.template(data));
+				$('.error').show();
 				_gaq.push(['_trackPageview', 'error']);
 				_gaq.push(['_trackEvent', 'Error', 'error', '']);
 			}
@@ -602,7 +687,7 @@ $(function(){
 					next.removeClass("hide");
 					//update url
 					var gifid = next.attr('id');
-					app.navigate("/gif/"+gifid+"", {trigger: false});	
+					// app.navigate("/gif/"+gifid+"", {trigger: false});	
 					//load next unloaded gif
 					var ondeck = $(".content .gif-container.unloaded").eq(0);
 					if (ondeck.length) {
@@ -627,16 +712,17 @@ $(function(){
 			""    :    "home",
 			"all" : "all",
 			"gif/:id" : "singleGif",
-			"user/:username" : "userGallery",
+			"u/:username" : "userGallery",
 			"tag/:tag" : "tagGallery",
 			"about" : "about",
+			"r/:subreddit" : "reddit",
 			":whatever" : "404"
 		},
 		initialize: function() {
 	        new AppView();
 	    },
 		home: function() {
-			new TopGifsView();
+			new AllGifsView();
 		},
 		all: function() {
 			new AllGifsView();
@@ -658,6 +744,11 @@ $(function(){
 				tag: tag
 			});
 		}, 
+		reddit: function(subreddit) {
+			new RedditGifsView({
+				subreddit: subreddit
+			});
+		},
 		404: function() {
 			new ErrorView({
 				title: "Well, Fuck",
@@ -668,6 +759,7 @@ $(function(){
 	
 	var app = new AppRouter();
 	Parse.history.start();
+
 	
 	
 	
