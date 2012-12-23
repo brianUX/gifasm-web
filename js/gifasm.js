@@ -68,6 +68,47 @@ $(function(){
 			}
 		});
 		
+		//top gifs view
+		TopGifsView = Parse.View.extend({
+			el: $('.content'),
+			template: _.template($('#top-gif-template').html()),
+			initialize: function(){
+				_.bindAll(this);
+				var self = this;
+				var username = this.options.username;
+				//grab top gifs
+				$.getJSON("http://www.reddit.com/r/gifs.json?jsonp=?",
+				 {
+				    format: "jsonp"
+				  },
+				  function(data) {
+						var x = data.data.children;
+						$('.content').empty();
+						self.render(x);
+				  });
+				$("#container .content").css('padding-top', '57px');
+			},
+			render: function(gifs){
+				var self = this;
+				if (gifs.length > 0) {
+					gifs.forEach(function(thisgif) {
+						var data = {
+							src: thisgif.data.url
+						};
+						var str = thisgif.data.url;
+						if (str.indexOf(".gif") >= 0) {
+							$(self.el).prepend(self.template(data));
+						}
+					});	
+				} else {
+					new ErrorView({
+						title: "Fuck.",
+						message: "We couldn't find any gifs from that user. Try again."
+					});
+				}
+			}
+		});
+		
 		//user gifs view
 		UserGifsView = Parse.View.extend({
 			el: $('.content'),
@@ -595,7 +636,7 @@ $(function(){
 	        new AppView();
 	    },
 		home: function() {
-			new AllGifsView();
+			new TopGifsView();
 		},
 		all: function() {
 			new AllGifsView();
