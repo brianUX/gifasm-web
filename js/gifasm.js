@@ -553,7 +553,7 @@ $(function(){
 		
 		//error view
 		ErrorView = Parse.View.extend({
-			el: $('.content'),
+			el: $('.error'),
 			template: _.template($('#error-template').html()),
 			initialize: function() {
 			  _.bindAll(this);
@@ -700,5 +700,5 @@ $(function(){
 		    self.find(".signup-form button").attr("disabled", "disabled");
 		    return false;	
 		};
-	
+		
 });

@@ -266,6 +266,21 @@ body{
 			font-size:20px;
 		}
 	}
+	.user-gif {
+		margin:11px 6px;
+		.gif {
+			img {
+				display: inline-block;
+			    width: 100%;
+			}
+		}
+		&:first-child {
+			margin-top:0;
+		}
+	}
+}
+
+.error {
 	.text-container {
 		width: 100%;
 		height:100%;
@@ -282,18 +297,6 @@ body{
 			font-size:22px;
 			line-height:32px;
 			color:#555;
-		}
-	}
-	.user-gif {
-		margin:11px 6px;
-		.gif {
-			img {
-				display: inline-block;
-			    width: 100%;
-			}
-		}
-		&:first-child {
-			margin-top:0;
 		}
 	}
 }
