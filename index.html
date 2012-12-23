@@ -20,20 +20,17 @@
 
 		<div class="header">
 			<div class="left">
-				<h1><a href="#"><img src="img/gifasm.png"></a></h1>
+				<h1><a href="#">Gifasm</a></h1>
 			</div>
 			<div class="right">
 				<div class="search"></div>
-				<div class="user">
-					<div class="loggedin">
-						<div class="add"></div>
-					</div>
-				</div>
+				<div class="user"></div>
 			</div>
 		</div>
 	
-		
-		<div class="content"></div>
+		<div id="container">
+			<div class="content"></div>
+		</div>
 		
 		<!-- <div class="footer">
 			<span>&copy;Gifasm 2012</span>
@@ -54,6 +51,14 @@
 			        	<span class="label label-inverse"><a href="#/tag/<% var tagsurl = tags[tag].replace(/\s+/g, '-').toLowerCase(); %><%= tagsurl %>"><%= tags[tag] %></a></span>
 			    	<% } %>
 				</div>
+			</div>
+		</script>​
+		
+		<script type="text/template" id="user-gif-template">
+			<div class="user-gif" id="<%= id %>">
+				<a class="gif" title="fullscreen" href="#/gif/<%= id %>">
+					<img src="<%= src %>" data-src="<%= src %>">
+				</a>
 			</div>
 		</script>​
 		
@@ -119,7 +124,7 @@
 				<div class="avatar dropdown">
 	               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img class="pic" src="<%= avatar %>"></a></a>
 	               <ul class="dropdown-menu">
-						<li><a href="#/user/<%= username %>"><%= username %></a></li>
+						<li><a href="#/user/<%= username %>" class="username"><%= username %></a></li>
 						<li class="divider"></li>
 						<li><a href="#" class="log-out">Log out</a></li>
 	               </ul>

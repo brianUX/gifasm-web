@@ -18,8 +18,11 @@ $(function(){
 			initialize: function(){
 				_.bindAll(this, "sizer");
 				var self = this;
-				this.query = new Gifs();
-				this.query.fetch({
+				var Gifs = Parse.Object.extend("Gif");
+				var query = new Parse.Query(Gifs);
+				query.limit(1000);
+				query.ascending("createdAt");
+				query.find({
 					success: function(gifs) {
 						$('.content').empty();
 						self.render(gifs);
@@ -34,7 +37,7 @@ $(function(){
 			},
 			render: function(gifs){
 				var self = this;
-				gifs.each(function(thisgif) {
+				gifs.forEach(function(thisgif) {
 					var data = {
 						src: thisgif.attributes.src,
 						id: thisgif.id,
@@ -47,7 +50,7 @@ $(function(){
 			},
 			sizer: function() {
 				var width = window.innerWidth;
-				var height = window.innerHeight - 64;
+				var height = window.innerHeight;
 				var gifs = $(".content .gif-container img");
 				gifs.css({
 					"width": width,
@@ -55,7 +58,7 @@ $(function(){
 				});
 				$(window).resize(function(){
 					var width = window.innerWidth;
-					var height = window.innerHeight - 64;
+					var height = window.innerHeight;
 					var gifs = $(".content .gif-container img");
 					gifs.css({
 						"width": width,
@@ -68,9 +71,9 @@ $(function(){
 		//user gifs view
 		UserGifsView = Parse.View.extend({
 			el: $('.content'),
-			template: _.template($('#gallery-gif-template').html()),
+			template: _.template($('#user-gif-template').html()),
 			initialize: function(){
-				_.bindAll(this, "sizer");
+				_.bindAll(this);
 				var self = this;
 				var username = this.options.username;
 				//grab all gifs by user
@@ -88,6 +91,7 @@ $(function(){
 						});
 					}
 				});
+				$("#container .content").css('padding-top', '57px');
 			},
 			render: function(gifs){
 				var self = this;
@@ -100,44 +104,21 @@ $(function(){
 						};
 						$(self.el).prepend(self.template(data));
 					});	
-					new PlayGallery();
-					this.sizer();
 				} else {
 					new ErrorView({
 						title: "Fuck.",
 						message: "We couldn't find any gifs from that user. Try again."
 					});
 				}
-			},
-			sizer: function() {
-				var width = window.innerWidth;
-				var height = window.innerHeight - 64;
-				var gifs = $(".content .gif-container img");
-				gifs.css({
-					"width": width,
-					"height": height
-				});
-				$(window).resize(function(){
-					var width = window.innerWidth;
-					var height = window.innerHeight - 64;
-					var gifs = $(".content .gif-container img");
-					gifs.css({
-						"width": width,
-						"height": height
-					});
-				});
-			},
-			reset: function() {
-				this.remove();
 			}
 		});
 		
 		//tagged gifs view
 		TagGifsView = Parse.View.extend({
 			el: $('.content'),
-			template: _.template($('#gallery-gif-template').html()),
+			template: _.template($('#user-gif-template').html()),
 			initialize: function (){
-				_.bindAll(this, "sizer");
+				_.bindAll(this);
 				var self = this;
 				var tag = this.options.tag;
 				//grab all gifs by user
@@ -155,6 +136,7 @@ $(function(){
 						});
 					}
 				});
+				$("#container .content").css('padding-top', '57px');
 			},
 			render: function(gifs){
 				var self = this;
@@ -166,33 +148,13 @@ $(function(){
 							tags: thisgif.attributes.tags 
 						};
 						$(self.el).prepend(self.template(data));
-					});	
-					this.sizer();
-					new PlayGallery();
+					});
 				} else {
 					new ErrorView({
 						title: "Nada",
 						message: "No gifs with that tag, bro. You should add some."
 					});
 				}
-			},
-			sizer: function() {
-				var width = window.innerWidth;
-				var height = window.innerHeight - 64;
-				var gifs = $(".content .gif-container img");
-				gifs.css({
-					"width": width,
-					"height": height
-				});
-				$(window).resize(function(){
-					var width = window.innerWidth;
-					var height = window.innerHeight - 64;
-					var gifs = $(".content .gif-container img");
-					gifs.css({
-						"width": width,
-						"height": height
-					});
-				});
 			}
 		});
 		
@@ -264,7 +226,7 @@ $(function(){
 			},
 			sizer: function() {
 				var width = window.innerWidth;
-				var height = window.innerHeight - 64;
+				var height = window.innerHeight;
 				var gifs = $(".content .gif-container img");
 				gifs.css({
 					"width": width,
@@ -272,7 +234,7 @@ $(function(){
 				});
 				$(window).resize(function(){
 					var width = window.innerWidth;
-					var height = window.innerHeight -64;
+					var height = window.innerHeight;
 					var gifs = $(".content .gif-container img");
 					gifs.css({
 						"width": width,
@@ -407,6 +369,7 @@ $(function(){
 					username: username,
 					avatar: avatar
 				}));
+				new UploadView();
 			},
 			logOut: function(e) {
 		        Parse.User.logOut();
@@ -491,13 +454,8 @@ $(function(){
 				if (str.indexOf(".gif") >= 0) {
 					var self = this;
 					var user = Parse.User.current();
-					if (user) {
-						var userid = user.id;
-						var username = this.options.username;
-					} else {
-						var username = "anonymous"
-						var userid = "iPhqjAbg7C"
-					}
+					var userid = user.id;
+					var username = $('.username').text();
 					var tags = $("form:visible input[name=hidden-tags]").val().toLowerCase();
 					var gif = new Gif();
 					gif.set("src", src);
@@ -585,11 +543,10 @@ $(function(){
 		    render: function() {
 				var currentUser = Parse.User.current();
 				if (currentUser) {
-					// new UserView();
+					new UserView();
 				} else {
-					// new NonuserView();
+					new NonuserView();
 				}
-				new UploadView();
 				new SearchView();
 		    },
 			nextgif: function() {
