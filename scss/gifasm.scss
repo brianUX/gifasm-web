@@ -114,6 +114,9 @@ body{
 			.notloggedin {
 				right: -7px;
 				position: relative;
+				a:hover {
+					cursor:pointer;
+				}
 			}
 			.loggedin {
 				position: relative;
@@ -199,10 +202,10 @@ body{
 							font-size: 16px;
 						}
 						.roe-tag {
-							position:relative;
-							padding:0 0 0 210px;
-							margin-bottom:10px;
-							height:48px;
+							position: relative;
+							padding: 58px 0 0 0;
+							margin-bottom: 10px;
+							width: 530px;
 							.myTag {
 								float: left;
 								margin: 14px 0 0 10px;
@@ -212,12 +215,14 @@ body{
 								padding: 6px 9px 5px;
 								font-size: 14px;
 								color: #343434;
+								clear: both;
 							}
 							.tags {
-								top:14px;
-								position:absolute;
-								left:0;
-								display:block !important;
+								top: 18px;
+								position: absolute;
+								left: 0;
+								display: block !important;
+								float: left;
 							}
 						}
 						.roe-last {
@@ -226,6 +231,9 @@ body{
 								width:100%;
 								float:left;
 								font-size:13px;
+							}
+							a:hover {
+								cursor:pointer;
 							}
 						}
 					}

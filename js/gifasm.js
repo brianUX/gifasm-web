@@ -224,17 +224,27 @@ $(function(){
 				$('.loading').show();
 				var self = this;
 				var username = this.options.username;
+				var viewtype = this.options.viewtype;
 				//grab all gifs by user
 				var gifs = new Parse.Query("Gif");
 				gifs.matches("username", username);
 				gifs.find({
 					success: function(gifs) {
-						new GifFullView({
-							source: "parse",
-							gifs: gifs,
-							errorTitle: 'Damn',
-							errorMessage: "We couldn't find any gifs from <em>"+username+"</em>. Try again."
-						});
+						if (viewtype === "board") {
+							new GifBoardView({
+								source: "parse",
+								gifs: gifs,
+								errorTitle: 'Damn',
+								errorMessage: "We couldn't find any gifs from <em>"+username+"</em>. Try again."
+							});	
+						} else {
+							new GifFullView({
+								source: "parse",
+								gifs: gifs,
+								errorTitle: 'Damn',
+								errorMessage: "We couldn't find any gifs from <em>"+username+"</em>. Try again."
+							});
+						}
 					}, 
 					error: function() {
 						new ErrorView({
@@ -420,29 +430,17 @@ $(function(){
 			el: ".user",
 			template: _.template($('#nonuser-template').html()),
 			events: {
-				"click #login": "showLogin",
-				"click #signup": "showSignup",
 			    "submit form.login-form": "logIn",
 			    "submit form.signup-form": "signUp"
 			},
 			initialize: function() {
-			    _.bindAll(this, "showLogin", "showSignup", "logIn", "signUp");
+			    _.bindAll(this, "logIn", "signUp");
 				$('#signup-modal').modal();
 				$('#login-modal').modal();
 			    this.render();
 			},
 			render: function() {
 			  this.$el.html(this.template());
-			},
-			showLogin: function() {
-				$('#signup-modal').modal('hide');
-				$('#login-modal').modal('show');
-				// $("#login-username").focus();
-			},
-			showSignup: function() {
-				$('#login-modal').modal('hide');
-				$('#signup-modal').modal('show');
-				// $("#signup-username").focus();
 			},
 			logIn: function(e) {
 			  var self = this;
@@ -498,7 +496,9 @@ $(function(){
 						}
 						self.render(username,avatar);
 					},
-					error: function(object, error) {}
+					error: function(object, error) {
+						self.render(username,avatar);
+					}
 				});
 			},
 			render: function(username,avatar) {
@@ -521,16 +521,14 @@ $(function(){
 			events: {
 				"change #fileselect": "grabFile",
 				"submit #fileupload": "uploadGif",
-				"submit #urladd": "addUrl",
-				"click #add-modal-button": "showModal",
-				"focus .urladdsrc": "urlAddReset"
+				"submit #urladd": "addUrl"
 			},
 			el: ".loggedin .add",
 			template: _.template($('#upload-template').html()),
 			appid: "lwRB5rPvenfJwKYSeDtnCsXj4WNZa3PuwAyAIN3P",
 			restkey: "LfkvpLyFErkF84FPPoZIOzOvSNH10jQI1meGnLEr",
 			initialize: function() {
-				_.bindAll(this, "uploadGif", "grabFile", "addGif", "addUrl", "addToUser", "showModal", "urlAddReset");
+				_.bindAll(this, "uploadGif", "grabFile", "addGif", "addUrl", "addToUser");
 			  	this.render();
 			},
 			render: function() {
@@ -540,7 +538,7 @@ $(function(){
 						maxTags: 3
 					});
 				});
-				$("form.add span a").click(function() {
+				$("a.add-toggle").click(function() {
 					$("form.add").toggle();
 					if ($("form#urladd:visible")) {
 						$("form#urladd .urladdsrc").focus().val("");
@@ -555,6 +553,7 @@ $(function(){
 			uploadGif: function() {
 				//make sure its a gif
 				if (this.filetype === "image/gif") {
+					$("button.add-gif:visible").button('loading');
 					var self = this;
 					var serverUrl = 'https://api.parse.com/1/files/' + this.file.name;
 					//send file
@@ -637,12 +636,6 @@ $(function(){
 					success: function() {},
 					error: function() {}
 				});
-			},
-			showModal: function() {
-				$("#add-modal").modal("toggle");
-			},
-			urlAddReset: function() {
-
 			}
 		});
 
@@ -655,6 +648,7 @@ $(function(){
 			  _.bindAll(this);
 			  this.render();
 			  $('.loading').hide();
+			  $('.content').empty();
 			},
 			render: function() {
 				var data = {
@@ -729,6 +723,7 @@ $(function(){
 			""    :    "home",
 			"all" : "all",
 			"gif/:id" : "singleGif",
+			"u/:username/:viewtype" : "userGalleryView",
 			"u/:username" : "userGallery",
 			"tag/:tag" : "tagGallery",
 			"about" : "about",
@@ -747,6 +742,12 @@ $(function(){
 		singleGif: function(id) {
 			new SingleGifView({
 				gif: id
+			});
+		},
+		userGalleryView: function(username,viewtype) {
+			new UserGifsView({
+				username: username,
+				viewtype: viewtype
 			});
 		},
 		userGallery: function(username) {
@@ -810,4 +811,26 @@ $(function(){
 		    return false;	
 		};
 		
+		//login toggle
+		$(".login").click(function() {
+			$('#signup-modal').modal('hide');
+			$('#login-modal').modal('show');
+			$("#login-username").focus();
+		});
+		
+		//signup toggle
+		$(".signup").click(function() {
+			$('#login-modal').modal('hide');
+			$('#signup-modal').modal('show');
+			$("#signup-username").focus();
+		});
+		
+		//upload modal
+		$("a#add-modal-button").live('click', function() {
+			$("#add-modal").modal("toggle");
+		});
+
+		
 });
+
+

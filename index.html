@@ -105,8 +105,8 @@
 		
 		<script type="text/template" id="nonuser-template">
 			<div class="notloggedin">
-			    <div id="login" class="btn btn-primary">Log in</div>
-				<div id="signup" class="btn btn-primary">Sign up</div>
+			    <div id="login" class="btn btn-primary login">Log in</div>
+				<div id="signup" class="btn btn-primary signup">Sign up</div>
 				<div class="modal hide" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 					<div class="modal-header">
 				    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -118,7 +118,7 @@
 							<input type="text" id="login-username" placeholder="Username" />
 							<input type="password" id="login-password" placeholder="Password" />
 							<button class="btn btn-primary" type="button submit">Log In</button>
-							<span class="help-block">Don&#8217;t have an account? <a href="#" id="signup">Make one</a></span>
+							<span class="help-block">Don&#8217;t have an account? <a class="signup">Make one</a></span>
 						</form>
 				    </div>
 				</div>
@@ -130,10 +130,10 @@
 				    <div class="modal-body">
 						<form id="signup" class="signup-form" onsubmit="signUp();">
 							<p class="error text-error" style="display:none"></p>
-							<input type="text" id="signup-username" placeholder="Username" />
+							<input type="text" id="signup-username" placeholder="Username" onkeyup="nospaces(this)" />
 							<input type="password" id="signup-password" placeholder="Create a Password" />
 							<button class="btn btn-primary" type="button submit">Sign Up</button>
-							<span class="help-block">Already have an account? <a href="#" id="login">Log in</a></span>
+							<span class="help-block">Already have an account? <a class="login">Log in</a></span>
 						</form>
 					</div>
 				</div>
@@ -159,33 +159,33 @@
 			<div class="modal hide" id="add-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 				<div class="modal-header">
 			    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-			    	<h3 id="myModalLabel">Gimme Dat Gif.</h3>
+			    	<h3 id="myModalLabel">Add Dat Gif</h3>
 			  	</div>
 				<div class="modal-body">
 					<form id="fileupload" class="add" enctype="multipart/form-data" method="post">
 						<div class="roe">
 							<p class="error text-error" style="display:none"></p>
 					    	<div class="input"><input type="file" accept="image/gif" name="fileselect" id="fileselect" class="btn main"></div>
-							<button class="btn btn-primary add-gif" type="button submit">Add</button>
+							<button class="btn btn-primary add-gif" type="button submit" data-loading-text="uploading gif...">Upload Gif</button>
 						</div>
 						<div class="roe roe-tag">
 							<input type="text" name="tags" placeholder="tags (max 3)" class="tags"/>
 						</div>
 						<div class="roe roe-last">
-							<span class="help-block"><a href="#">Use a URL instead</a></span>
+							<span class="help-block"><a class="add-toggle">Paste from URL instead</a></span>
 						</div>
 					</form>
 					<form id="urladd" class="add hide">
 						<div class="roe">
 				    		<p class="error text-error" style="display:none"></p>
 					    	<input type="text" class="main input urladdsrc" placeholder="http://">
-							<button class="btn btn-primary add-gif" type="button submit">Add</button>
+							<button class="btn btn-primary add-gif" type="button submit" data-loading-text="adding gif...">Add Gif</button>
 						</div>
 						<div class="roe roe-tag">
 				     		<input type="text" name="tags" placeholder="tags (max 3)" class="tags"/>
 						</div>
 						<div class="roe roe-last">
-							<span class="help-block"><a href="#">Uploader</a></span>
+							<span class="help-block"><a class="add-toggle">Upload gif from my computer</a></span>
 						</div>
 					</form>
 				</div>
