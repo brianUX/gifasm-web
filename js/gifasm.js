@@ -73,7 +73,6 @@ $(function(){
 			},
 			render: function(gifs){
 				var self = this;
-				console.log(gifs.length);
 				if (gifs.length > 0) {
 					gifs.forEach(function(thisgif) {
 						if (self.options.source === "parse") {
@@ -674,10 +673,11 @@ $(function(){
 		AppView = Parse.View.extend({
 			el: ".content",
 			events: {
-				"click div.gallery-gif" : "nextgif"
+				"click div.gallery-gif" : "nextgif",
+				"click .tags span" : "tag"
 			},
 			initialize: function() {
-				_.bindAll(this, "nextgif");
+				_.bindAll(this, "nextgif", "tag");
 		        this.render();
 		    },
 		    render: function() {
@@ -715,6 +715,9 @@ $(function(){
 				}
 				var thisURL = window.location.hash;
 				_gaq.push(['_trackPageview', thisURL]);
+			},
+			tag: function(e) {
+				event.stopPropogation(e);
 			}
 		});	
 		
