@@ -224,13 +224,13 @@ $(function(){
 				$('.loading').show();
 				var self = this;
 				var username = this.options.username;
-				var viewtype = this.options.viewtype;
 				//grab all gifs by user
 				var gifs = new Parse.Query("Gif");
 				gifs.matches("username", username);
 				gifs.find({
 					success: function(gifs) {
-						if (viewtype === "board") {
+						var viewtype = self.options.viewtype;
+						if (viewtype === "grid") {
 							new GifBoardView({
 								source: "parse",
 								gifs: gifs,
