@@ -43,7 +43,6 @@ $(function(){
 							}
 						}
 					});	
-					console.log($('a.gif').size());
 					if  ($('a.gif').size() < 1) {
 						new ErrorView({
 							title: self.options.errorTitle,
@@ -51,6 +50,7 @@ $(function(){
 						});
 					}
 				} else {
+					alert($('a.gif').size());
 					new ErrorView({
 						title: self.options.errorTitle,
 						message: self.options.errorMessage
@@ -73,6 +73,7 @@ $(function(){
 			},
 			render: function(gifs){
 				var self = this;
+				console.log(gifs.length);
 				if (gifs.length > 0) {
 					gifs.forEach(function(thisgif) {
 						if (self.options.source === "parse") {
@@ -97,6 +98,12 @@ $(function(){
 							}
 						}
 					});
+					if  ($('a.gif').size() < 1) {
+						new ErrorView({
+							title: self.options.errorTitle,
+							message: self.options.errorMessage
+						});
+					}
 					new PlayGallery();
 					self.sizer();
 				} else {
@@ -178,7 +185,7 @@ $(function(){
 				var subreddit = this.options.subreddit;
 				this.title = "r/"+subreddit+"";
 				//grab top gifs 
-				$.getJSON("http://www.reddit.com/"+this.title+".json?sort=hot&limit=200&jsonp=?", 
+				$.getJSON("http://www.reddit.com/"+this.title+".json?sort=hot&limit=100&jsonp=?", 
 					{
 				    	format: "jsonp"
 				 	},
