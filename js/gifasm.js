@@ -21,6 +21,7 @@ $(function(){
 				$('.error').empty();
 				var gifs = this.options.gifs;
 				this.render(gifs);
+				$('.loading').hide();
 			},
 			render: function(gifs){
 				var self = this;
@@ -68,6 +69,7 @@ $(function(){
 				$('.error').empty();
 				var gifs = this.options.gifs;
 				this.render(gifs);
+				$('.loading').hide();
 			},
 			render: function(gifs){
 				var self = this;
@@ -130,6 +132,7 @@ $(function(){
 			template: _.template($('#title-board-template').html()),
 			initialize: function(){
 				_.bindAll(this);
+				$('.loading').show();
 				var self = this;
 				var Gifs = Parse.Object.extend("Gif");
 				var query = new Parse.Query(Gifs);
@@ -151,12 +154,13 @@ $(function(){
 						});
 					}
 				});
+				this.render();
 			},
 			render: function(){
 				var self = this;
 				$('.title').empty();
 				var data = {
-					title: self.title
+					title: "all"
 				};
 				$(self.el).prepend(self.template(data));
 			}
@@ -168,12 +172,13 @@ $(function(){
 			template: _.template($('#title-board-template').html()),
 			initialize: function(){
 				_.bindAll(this);
+				$('.loading').show();
 				var self = this;
 				var username = this.options.username;
 				var subreddit = this.options.subreddit;
 				this.title = "r/"+subreddit+"";
 				//grab top gifs 
-				$.getJSON("http://www.reddit.com/"+this.title+".json?sort=hot&limit=100&jsonp=?", 
+				$.getJSON("http://www.reddit.com/"+this.title+".json?sort=hot&limit=200&jsonp=?", 
 					{
 				    	format: "jsonp"
 				 	},
@@ -210,6 +215,7 @@ $(function(){
 			template: _.template($('#title-board-template').html()),
 			initialize: function(){
 				_.bindAll(this);
+				$('.loading').show();
 				var self = this;
 				var username = this.options.username;
 				//grab all gifs by user
@@ -217,7 +223,7 @@ $(function(){
 				gifs.matches("username", username);
 				gifs.find({
 					success: function(gifs) {
-						new GifBoardView({
+						new GifFullView({
 							source: "parse",
 							gifs: gifs,
 							errorTitle: 'Damn',
@@ -249,6 +255,7 @@ $(function(){
 			template: _.template($('#title-board-template').html()),
 			initialize: function (){
 				_.bindAll(this);
+				$('.loading').show();
 				var self = this;
 				var tag = this.options.tag;
 				//grab all gifs by user
@@ -256,7 +263,7 @@ $(function(){
 				query.equalTo("tags", tag);
 				query.find({
 					success: function(gifs) {
-						new GifBoardView({
+						new GifFullView({
 							source: "parse",
 							gifs: gifs,
 							errorTitle: 'Nada',
@@ -640,8 +647,8 @@ $(function(){
 			template: _.template($('#error-template').html()),
 			initialize: function() {
 			  _.bindAll(this);
-				$('.title').empty();
 			  this.render();
+			  $('.loading').hide();
 			},
 			render: function() {
 				var data = {
