@@ -53,12 +53,15 @@
 		<script type="text/template" id="gallery-gif-template">
 			<div class="gif-container gallery-gif hide unloaded" id="<%= id %>">
 				<a class="gif" title="next gif">
-					<img src="" data-src="<%= src %>">
+					<img class="the-gif" src="" data-src="<%= src %>">
 				</a>
 				<div class="tags">
 					<% for(var tag in tags) { %>
 			        	<span class="label label-inverse"><a href="#/tag/<% var tagsurl = tags[tag].replace(/\s+/g, '-').toLowerCase(); %><%= tagsurl %>"><%= tags[tag] %></a></span>
 			    	<% } %>
+				</div>
+				<div class="regif">
+					<a class="btn regif" title="regif"><img src="img/regif.png"></a>
 				</div>
 			</div>
 		</script>​
@@ -151,6 +154,20 @@
 	               </ul>
 		      	</div>
 				<div class="add"></div>
+			</div>
+			<div class="modal hide" id="tag-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-header">
+			    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			    	<h3 id="myModalLabel">Regif</h3>
+			  	</div>
+				<div class="modal-body">
+					<form id="tagadd">
+						<div class="roe roe-tag">
+				     		<input type="text" name="tags" placeholder="comma, separated, tags (max 3)" class="tags"/>
+				     		<button class="btn btn-primary add-gif" type="button submit" data-loading-text="saving gif...">Save</button>
+						</div>
+					</form>
+				</div>
 			</div>
 		</script>
 		
