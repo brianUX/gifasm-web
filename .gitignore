@@ -1,5 +1,0 @@
-*.sass-cache
-*.scssc
-.sass-cache/*
-build/*
-build
