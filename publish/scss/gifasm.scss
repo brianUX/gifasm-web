@@ -3,42 +3,34 @@
 @import "normalize.scss";
 @import "bootstrap.scss";
 @import "tags.scss";
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700);
 
 body{
-	background:url(../img/bg.png) repeat;
-	overflow:hidden;
+	background:#fff;
+	font-family: 'Open Sans', sans-serif;
 }
 
 .header {
-	position:fixed;	
-	height:64px;
+	height:56px;
 	width:100%;
-	top:0;
-	left:0;
-	@include background-image(linear-gradient(top, #2b2b2b, #282828));
-	@include box-shadow(rgba(black, 0.5) 0 0 5px);
+	background-color:rgba(255,255,255,0.85);
+	position:fixed;
+	z-index:10;
 	.left {
 		float:left;
-		width:184px;
-		height:64px;
-		border-right:1px solid #030303;
-		@include background-image(linear-gradient(top, #313131, #2f2f2f));
+		width:100px;
+		padding:8px 8px 8px 11px;
 		h1 {
-			float:left;
-			width:183px;
-			height:64px;
-			border-right:1px solid #404040;
 			margin:0;
-			padding:0;
+			font-weight:700;
+			font-size:30px;
+			letter-spacing: -1px;
 			a {
-				float:left;
-				width:182px;
-				height:64px;
-				border-right:1px solid #2b2b2b;
-				margin:0;
-				padding:0;
-				img {
-					padding:17px 0 0 19px;
+				color:#333;
+				@include text-shadow(0 1px 1px #fff);
+				&:hover {
+					text-decoration:none;
+					color:#222;
 				}
 				&:active {
 					position:relative;
@@ -47,44 +39,56 @@ body{
 
 			}
 		}
-		&:hover {
-			@include background-image(linear-gradient(top, #333333, #313131));
-		}
 	}
 	.right {
 		float:left;
+		padding:0 0 0 23px;
 		.search {
 			float:left;
 			position:relative;
+			top:-1px;
 			input {
 				width:155px;
-				height:12px;
-				color:#aeaeae;
-				font-size:14px;
+				height:10px;
+				color:#333;
+				font-size:12px;
 				padding:11px 20px 12px 39px;
-				margin:14px 0 0 27px;
-				font-style:italic;
-				background:#fff;
-				@include background-image(linear-gradient(top, #ebebeb, #fff));
-				@include box-shadow(rgba(black, 0.5) 0 0 5px);
+				margin:13px 0 0 -5px;
+				background-color:rgba(255,255,255,0.9);
+				border:none;
+				font-family: 'Open Sans', sans-serif;
 				&:focus {
-					color:#343434;
 					font-style:normal;
+					border:none;
 				}
 			}
 			img {
-				position:absolute;
-				top:23px;
-				left:38px;
+				position: absolute;
+				top: 20px;
+				left: 6px;
+				opacity: 0.5;
+			}
+		}
+		.title {
+			float:left;
+			h2 {
+				margin: 26px 0 24px 24px;
+				font-size: 18px;
+				font-weight: 300;
+				line-height: 0;
+				a {
+					color:#666;
+					@include text-shadow(0 1px 1px #fff);
+				}
 			}
 		}
 		.user {
 			position:absolute;
-			top:15px;
-			right:35px;
+			top: 10px;
+			right: 17px;
 			.notloggedin, .loggedin {
 				#login.btn, #signup.btn {
-					margin-left:12px;
+					margin-left:8px;
 				}
 				input {
 					width:192px;
@@ -108,20 +112,25 @@ body{
 				}
 			}
 			.notloggedin {
-				right: -23px;
+				right: -7px;
 				position: relative;
+				a:hover {
+					cursor:pointer;
+				}
 			}
 			.loggedin {
+				position: relative;
+				top: 4px;
+				right:3px;
 				.avatar {
 					float: right;
-					top: -9px;
-					right: -29px;
+					top: -4px;
+					right: -9px;
 					.pic {
 						padding:0;
 						background:#f3f3f3;
-						width:52px;
-						height:52px;
-						@include border-radius(4px);
+						width:34px;
+						height:34px;
 						&:active {
 							position:relative;
 							top:1px;
@@ -137,8 +146,8 @@ body{
 						left:5px;
 					}
 					.dropdown-menu {
-						top: 52px;
-						left: -107px;
+						top: 38px;
+						left: -126px;
 						li {
 							a:hover {
 								background:#f1f1f1;
@@ -148,8 +157,9 @@ body{
 					}
 				}
 				.add {
-					float:left;
-					margin-right: -7px;
+					float: left;
+					margin-right: 7px;
+					margin-top: -4px;
 					#add-modal {
 						.modal-body {
 							overflow:hidden;
@@ -167,7 +177,7 @@ body{
 							border:1px solid #CCC;
 							padding:13px;
 							width: 326px;
-							@include border-radius(4px);
+							@include border-radius(0px);
 							margin:0;
 							input {
 								height: 100%;
@@ -192,10 +202,10 @@ body{
 							font-size: 16px;
 						}
 						.roe-tag {
-							position:relative;
-							padding:0 0 0 210px;
-							margin-bottom:10px;
-							height:48px;
+							position: relative;
+							padding: 58px 0 0 0;
+							margin-bottom: 10px;
+							width: 530px;
 							.myTag {
 								float: left;
 								margin: 14px 0 0 10px;
@@ -205,12 +215,14 @@ body{
 								padding: 6px 9px 5px;
 								font-size: 14px;
 								color: #343434;
+								clear: both;
 							}
 							.tags {
-								top:14px;
-								position:absolute;
-								left:0;
-								display:block !important;
+								top: 18px;
+								position: absolute;
+								left: 0;
+								display: block !important;
+								float: left;
 							}
 						}
 						.roe-last {
@@ -220,6 +232,9 @@ body{
 								float:left;
 								font-size:13px;
 							}
+							a:hover {
+								cursor:pointer;
+							}
 						}
 					}
 				}
@@ -228,41 +243,72 @@ body{
 	}
 }
 
-.content {
-	.gif-container {
-		&:hover {
-			cursor:pointer;
-		}
-		a {
-			img {
-				position:absolute;
-				bottom:0;
-				z-index:-10;
+#container {
+    width: 99.7%;
+    margin: 0 auto;
+    z-index:1px;
+	padding-top:57px;
+	.content {
+	    width: 100%;
+		@include column-count(5);
+		@include column-gap(0px);
+		.gif-container {
+			&:hover {
+				cursor:pointer;
 			}
-		}
-		.tags {
-			position:absolute;
-			bottom:18px;
-			left:15px;
-			.label {
-				padding:3px 8px 6px;
-				font-size:16px;
-				margin-right:8px;
-				background:#1f6fc8;
-				a {
-					color:#fff;
-					font-weight: normal;
+			a {
+				img.the-gif {
+					position:absolute;
+					left:0;
+					bottom:0;
+					z-index:-10;
+				}
+			}
+			.tags {
+				position: absolute;
+				bottom: 22px;
+				left: 16px;
+				.label {
+					padding:3px 8px 6px;
+					font-size:16px;
+					margin-right:8px;
+					background:#1f6fc8;
+					a {
+						color:#fff;
+						font-weight: normal;
+					}
+				}
+			}
+			.regif {
+				position: absolute;
+				top: 36px;
+				right: 5px;
+				font-size: 18px;
+				background-color: rgba(255,255,255, 0.9);
+				margin: 0;
+				padding: 4px 9px 3px 10px;
+				&:active {
+					position:relative;
+					top:1px;
 				}
 			}
 		}
-		.regif {
-			position:absolute;
-			top:75px;
-			right:15px;
-			color:#fff;
-			font-size:20px;
+		.user-gif {
+			margin:11px 6px;
+			.gif {
+				img {
+					display: inline-block;
+				    width: 100%;
+				}
+			}
+			&:first-child {
+				margin-top:0;
+			}
 		}
 	}
+}
+
+.error {
 	.text-container {
 		width: 100%;
 		height:100%;
@@ -274,11 +320,27 @@ body{
 			font-size: 140px;
 			margin: 60px 0 20px;
 			line-height: 180px;
+			letter-spacing: -3px;
 		}
 		p {
 			font-size:22px;
 			line-height:32px;
 			color:#555;
+		}
+	}
+}
+
+.loading {
+	background: #f9f9f9;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	div {
+		width:120px;
+		margin:10% auto 0;
+		img {
+			width:120px;
+			height:120px;
 		}
 	}
 }
@@ -293,5 +355,42 @@ body{
 		margin:0 0 0 12px;
 		@include text-shadow(0 1px 1px #fff);
 	}
+}
+
+@media only screen and (max-width : 1299px),
+only screen and (max-device-width : 1299px){
+    .content {
+		@include column-count(4);
+		@include column-gap(0px);
+        width: 100%;
+    }
+}
+ 
+ 
+@media only screen and (max-width : 1099px),
+only screen and (max-device-width : 1099px){
+    .content {
+		@include column-count(3);
+		@include column-gap(0px);
+        width: 100%;
+    }
+}
+ 
+@media only screen and (max-width : 899px),
+only screen and (max-device-width : 899px){
+    .content {
+		@include column-count(2);
+		@include column-gap(0px);
+        width: 100%;
+    }
+}
+ 
+@media only screen and (max-width : 499px),
+only screen and (max-device-width : 499px){
+    .content {
+		@include column-count(1);
+		@include column-gap(0px);
+        width: 100%;
+    }
 }
 

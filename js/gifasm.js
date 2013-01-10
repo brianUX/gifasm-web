@@ -215,6 +215,85 @@ $(function(){
 			}
 		});
 		
+		//reddit search view
+		RedditSearchView = Parse.View.extend({
+			el: $('.title'),
+			template: _.template($('#title-board-template').html()),
+			initialize: function(){
+				_.bindAll(this, "fetch", "getCount", "makeView", "combineObjects");
+				$('.loading').show();
+				var self = this;
+				var username = this.options.username;
+				this.query = this.options.query;
+				this.title = "search/"+this.query+"";
+				this.fetch(this.query);
+				this.render();
+			},
+			render: function(){
+				var self = this;
+				$('.title').empty();
+				var data = {
+					title: self.title
+				};
+				$(self.el).prepend(self.template(data));
+			},
+			fetch: function(query,count,after) {
+				var self = this;
+				var url = "http://www.reddit.com/search.json?q="+query+"+gifs&sort=relevance&t=all&limit=100&count="+count+"&after="+after+"&jsonp=?"
+				$.getJSON(url, {format: "jsonp"}, 
+					function(data) {
+						var gifs = data.data.children;
+						self.makeView(gifs);
+			    	}
+				).error(function() {
+					new ErrorView({
+						title: "Error",
+						message: "Your search for <em>"+self.options.query+"</em> broke the internet. Try again."
+					});
+				});
+			},
+			getCount: function(gifs,lastGifId) {
+				var self = this;
+			    var count = 0,
+			        key;
+			    for (key in gifs) {
+			        if (gifs.hasOwnProperty(key)) {
+			            count++;
+			        }
+			    }
+				if (count < 100) {
+					var last = true;
+				} else { 
+					var last = false;
+				}
+				self.combineObjects(gifs,count,last,lastGifId);
+			},
+			combineObjects: function(gifs,count,last,lastGifId) {
+				var self = this;
+				self.allGifs = jQuery.extend(true,self.allGifs, gifs);
+				var dankGifs = self.allGifs;
+				console.log()
+				if (last == false) {
+					self.newCount = self.newCount + 100;
+					console.log(self.newCount);
+					self.fetch(self.query,self.newCount,lastGifId);
+				}
+				if (last == true) {
+					self.makeView(dankGifs);
+				}
+				
+			},
+			makeView: function(allGifs) {
+				var self = this;
+				new GifFullView({
+					source: "reddit",
+					gifs: allGifs,
+					errorTitle: 'Drats',
+					errorMessage: "Couldn't find any <em>"+self.options.query+"</em> gifs. You should upload some, bro."
+				});	
+			}
+		});
+		
 		//user gifs view
 		UserGifsView = Parse.View.extend({
 			el: $('.title'),
@@ -312,17 +391,25 @@ $(function(){
 				initialize: function() {
 					_.bindAll(this);
 					this.element = $(".content");
-					var item = this.element.find(".gif-container");
-					var size = item.length;
-					item.slice(0,5).each(function() {
+					this.item = this.element.find(".gif-container");
+					var size = this.item.length;
+					this.item.slice(0,5).each(function() {
 						$(this).removeClass("unloaded").addClass("loaded");
 						var img = $(this).find("img.the-gif");
 						var src = img.attr("data-src");
 						img.attr("src", src);
+						img.error(function() {
+							var x = $(this).parents(".gif-container");
+							var i = x.index();
+							if (i == 0) {
+								x.next('.gif-container').removeClass('hide');
+							}
+							x.remove();
+						});
 					});
 					//show first one
-					item.eq(0).removeClass("hide");
-					// var gifid = item.eq(0).attr('id');	
+					// var gifid = this.item.eq(0).attr('id');	
+					$(".content .gif-container.loaded:first-child").removeClass('hide');
 					// app.navigate("gif/"+gifid+"", {trigger: false});	
 				}
 			});
@@ -401,9 +488,9 @@ $(function(){
 			  	$(this.el).html(this.template());
 			},
 			search: function() {
-				var query = $("form.search input").val().toLowerCase().replace(/ /g,"-");
+				var query = $("form.search input").val().replace(/\s+/g, '-').toLowerCase();
 				if (query) {
-					app.navigate("tag/"+query+"", {trigger: true});	
+					app.navigate("search/"+query+"", {trigger: true});	
 				}
 		    	return false;
 				this.remove();
@@ -658,12 +745,11 @@ $(function(){
 		AppView = Parse.View.extend({
 			el: ".content",
 			events: {
-				"click div.gallery-gif" : "nextgif",
 				"click .tags span" : "tag",
 				"click a.regif" : "regif"
 			},
 			initialize: function() {
-				_.bindAll(this, "nextgif", "tag", "regif");
+				_.bindAll(this, "tag", "regif");
 		        this.render();
 		    },
 		    render: function() {
@@ -675,33 +761,6 @@ $(function(){
 				}
 				new SearchView();
 		    },
-			nextgif: function() {
-				var current = $("div.gallery-gif:visible");
-				var nextdex = current.index() + 1;
-				var next = $(".content").find(".gif-container:eq("+nextdex+")");
-				//hide current
-				current.addClass("hide");
-				//show next
-				if (next.length) {
-					//show next
-					next.removeClass("hide");
-					//update url
-					var gifid = next.attr('id');
-					// app.navigate("/gif/"+gifid+"", {trigger: false});	
-					//load next unloaded gif
-					var ondeck = $(".content .gif-container.unloaded").eq(0);
-					if (ondeck.length) {
-						ondeck.removeClass("unloaded").addClass("loaded");
-						var img = ondeck.find("img.the-gif");
-						var src = img.attr("data-src");
-						img.attr("src", src);
-					}
-				} else {
-					$(".content .gallery-gif").eq(0).removeClass("hide");
-				}
-				var thisURL = window.location.hash;
-				_gaq.push(['_trackPageview', thisURL]);
-			},
 			tag: function(e) {
 				event.stopPropogation(e);
 			},
@@ -728,6 +787,7 @@ $(function(){
 			"u/:username/:viewtype" : "userGalleryView",
 			"u/:username" : "userGallery",
 			"tag/:tag" : "tagGallery",
+			"search/:query" : "redditSearch",
 			"about" : "about",
 			"r/:subreddit" : "reddit",
 			":whatever" : "404"
@@ -768,6 +828,11 @@ $(function(){
 			new RedditGifsView({
 				subreddit: subreddit
 			});
+		},
+		redditSearch: function(query) {
+			new RedditSearchView({
+				query: query
+			})
 		},
 		404: function() {
 			new ErrorView({
@@ -890,6 +955,50 @@ $(function(){
 				}
 			});
 		}
+		
+		//next gif
+		$(".content .gallery-gif").live('click', function(){ 
+			var current = $("div.gallery-gif:visible");
+			if (!(current)) {
+				alert('no current');
+				var current = $("div.gallery-gif:first-child");
+			}
+			var nextdex = current.index() + 1;
+			var next = $(".content").find(".gif-container:eq("+nextdex+")");
+			//hide current
+			current.addClass("hide");
+			//show next
+			if (next.length) {
+				//show next
+				next.removeClass("hide");
+				//update url
+				var gifid = next.attr('id');
+				// app.navigate("/gif/"+gifid+"", {trigger: false});	
+				//load next unloaded gif
+				var ondeck = $(".content .gif-container.unloaded").eq(0);
+				if (ondeck.length) {
+					ondeck.removeClass("unloaded").addClass("loaded");
+					var img = ondeck.find("img.the-gif");
+					var src = img.attr("data-src");
+					img.attr("src", src);
+					img.error(function() {
+						var x = $(this).parents(".gif-container");
+						var next = x.next(".gif-container");
+						if (next.hasClass("unloaded")) {
+							next.removeClass("unloaded").addClass("loaded");
+							var img = next.find("img.the-gif");
+							var src = img.attr("data-src");
+							img.attr("src", src);
+						}
+						x.remove();
+					});
+				}
+			} else {
+				$(".content .gallery-gif").eq(0).removeClass("hide");
+			}
+			var thisURL = window.location.hash;
+			_gaq.push(['_trackPageview', thisURL]);
+		});
 
 		
 });

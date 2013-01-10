@@ -41,3 +41,4 @@ function nospaces(t){
     t.value=t.value.replace(/\s/g,'');
   }
 }
+

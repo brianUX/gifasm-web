@@ -7,10 +7,10 @@
         <meta charset=utf-8>
         <meta http-equiv=X-UA-Compatible content="IE=edge,chrome=1">
         <title>Gifasm</title>
-        <meta name=description content="">
+        <meta name=description content="discover, share, and save the best gifs on the internet.">
         <meta name=viewport content="width=728">
         
-        <link rel=stylesheet href='css/f3cd729.css'>
+        <link rel=stylesheet href='css/150af30.css'>
         <script src="js/vendor/modernizr-2.6.2.min.js"></script>
     </head>
     <body>
@@ -18,36 +18,68 @@
 
 		<div class=header>
 			<div class=left>
-				<h1><a href="#"><img src="img/gifasm.png"></a></h1>
+				<h1><a href="/">Gifasm</a></h1>
 			</div>
 			<div class=right>
 				<div class=search></div>
 				<div class=user></div>
+				<div class=title></div>
+			</div>
+		</div>
+		
+		<div class="loading hide">
+			<div>
+				<img src="img/loading.gif">
 			</div>
 		</div>
 	
+		<div id=container>
+			<div class=content></div>
+		</div>
 		
-		<div class=content></div>
-		
+		<div class="error hide"></div>
 		
 		
 		
 		<script type="text/template" id=gallery-gif-template>
 			<div class="gif-container gallery-gif hide unloaded" id="<%= id %>">
 				<a class="gif" title="next gif">
-					<img src="" data-src="<%= src %>">
+					<img class="the-gif" src="" data-src="<%= src %>">
 				</a>
 				<div class="tags">
 					<% for(var tag in tags) { %>
 			        	<span class="label label-inverse"><a href="#/tag/<% var tagsurl = tags[tag].replace(/\s+/g, '-').toLowerCase(); %><%= tagsurl %>"><%= tags[tag] %></a></span>
 			    	<% } %>
 				</div>
+				<div class="regif">
+					<a class="btn regif" title="regif"><img src="img/regif.png"></a>
+				</div>
 			</div>
 		</script>​
 		
+		<script type="text/template" id=user-gif-template>
+			<div class="user-gif" id="<%= id %>">
+				<a class="gif" title="fullscreen" href="#/gif/<%= id %>">
+					<img src="<%= src %>" data-src="<%= src %>">
+				</a>
+			</div>
+		</script>​
+		
+		<script type="text/template" id=gif-board-template>
+			<div class="user-gif">
+				<a class="gif">
+					<img src="<%= src %>" data-src="<%= src %>">
+				</a>
+			</div>
+		</script>
+		
+		<script type="text/template" id=title-board-template>
+			<h2><a href="#/<%= title %>"><%= title %></a></h2>
+		</script>
+		
 		<script type="text/template" id=single-gif-template>
 			<div class="gif-container single-gif">
-				<a class="gif" href="#/all">
+				<a class="gif gif-one" title="next gif">
 					<img src="<%= src %>">
 				</a>
 				<div class="tags">
@@ -61,14 +93,14 @@
 		<script type="text/template" id=search-template>
 			<form class="search">
 				<img src="img/search.png">
-				<input type="text" placeholder="search">
+				<input type="text" placeholder="search the gifs">
 			</form>
 		</script>​
 		
 		<script type="text/template" id=nonuser-template>
 			<div class="notloggedin">
-			    <div id="login" class="btn btn-primary">Log in</div>
-				<div id="signup" class="btn btn-primary">Sign up</div>
+			    <div id="login" class="btn btn-primary login">Log in</div>
+				<div id="signup" class="btn btn-primary signup">Sign up</div>
 				<div class="modal hide" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 					<div class="modal-header">
 				    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -80,7 +112,7 @@
 							<input type="text" id="login-username" placeholder="Username" />
 							<input type="password" id="login-password" placeholder="Password" />
 							<button class="btn btn-primary" type="button submit">Log In</button>
-							<span class="help-block">Don&#8217;t have an account? <a href="#" id="signup">Make one</a></span>
+							<span class="help-block">Don&#8217;t have an account? <a class="signup">Make one</a></span>
 						</form>
 				    </div>
 				</div>
@@ -92,10 +124,10 @@
 				    <div class="modal-body">
 						<form id="signup" class="signup-form" onsubmit="%%%~COMPRESS~EVENT~0~%%%">
 							<p class="error text-error" style="display:none"></p>
-							<input type="text" id="signup-username" placeholder="Username" />
+							<input type="text" id="signup-username" placeholder="Username" onkeyup="%%%~COMPRESS~EVENT~1~%%%" />
 							<input type="password" id="signup-password" placeholder="Create a Password" />
 							<button class="btn btn-primary" type="button submit">Sign Up</button>
-							<span class="help-block">Already have an account? <a href="#" id="login">Log in</a></span>
+							<span class="help-block">Already have an account? <a class="login">Log in</a></span>
 						</form>
 					</div>
 				</div>
@@ -107,47 +139,61 @@
 				<div class="avatar dropdown">
 	               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img class="pic" src="<%= avatar %>"></a></a>
 	               <ul class="dropdown-menu">
-						<li><a href="#/user/<%= username %>"><%= username %></a></li>
+						<li><a href="#/u/<%= username %>" class="username"><%= username %></a></li>
 						<li class="divider"></li>
 						<li><a href="#" class="log-out">Log out</a></li>
 	               </ul>
 		      	</div>
 				<div class="add"></div>
 			</div>
+			<div class="modal hide" id="tag-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-header">
+			    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			    	<h3 id="myModalLabel">Regif</h3>
+			  	</div>
+				<div class="modal-body">
+					<form id="tagadd">
+						<div class="roe roe-tag">
+				     		<input type="text" name="tags" placeholder="comma, separated, tags (max 3)" class="tags"/>
+				     		<button class="btn btn-primary add-gif" type="button submit" data-loading-text="saving gif...">Save</button>
+						</div>
+					</form>
+				</div>
+			</div>
 		</script>
 		
 		<script type="text/template" id=upload-template>
-			<a href="#add-modal" role="button" class="btn btn-primary" data-toggle="modal" title="add gif">+ add gif</a>
+			<a id="add-modal-button" role="button" class="btn btn-primary" data-toggle="modal" title="add gif">+ Add Gif</a>
 			<div class="modal hide" id="add-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 				<div class="modal-header">
 			    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-			    	<h3 id="myModalLabel">Add Gif</h3>
+			    	<h3 id="myModalLabel">Add Dat Gif</h3>
 			  	</div>
 				<div class="modal-body">
 					<form id="fileupload" class="add" enctype="multipart/form-data" method="post">
 						<div class="roe">
 							<p class="error text-error" style="display:none"></p>
 					    	<div class="input"><input type="file" accept="image/gif" name="fileselect" id="fileselect" class="btn main"></div>
-							<button class="btn btn-primary add-gif" type="button submit">Add</button>
+							<button class="btn btn-primary add-gif" type="button submit" data-loading-text="uploading gif...">Upload Gif</button>
 						</div>
 						<div class="roe roe-tag">
-							<input type="text" name="tags" placeholder="Tags (max 3)" class="tags"/>
+							<input type="text" name="tags" placeholder="tags (max 3)" class="tags"/>
 						</div>
 						<div class="roe roe-last">
-							<span class="help-block"><a href="#">Use a URL instead</a></span>
+							<span class="help-block"><a class="add-toggle">Paste from URL instead</a></span>
 						</div>
 					</form>
 					<form id="urladd" class="add hide">
 						<div class="roe">
 				    		<p class="error text-error" style="display:none"></p>
 					    	<input type="text" class="main input urladdsrc" placeholder="http://">
-							<button class="btn btn-primary add-gif" type="button submit">Add</button>
+							<button class="btn btn-primary add-gif" type="button submit" data-loading-text="adding gif...">Add Gif</button>
 						</div>
 						<div class="roe roe-tag">
-				     		<input type="text" name="tags" placeholder="Tags (max 3)" class="tags"/>
+				     		<input type="text" name="tags" placeholder="tags (max 3)" class="tags"/>
 						</div>
 						<div class="roe roe-last">
-							<span class="help-block"><a href="#">Uploader</a></span>
+							<span class="help-block"><a class="add-toggle">Upload gif from my computer</a></span>
 						</div>
 					</form>
 				</div>
@@ -166,7 +212,7 @@
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js"></script>
 		<script src="http://www.parsecdn.com/js/parse-1.1.6.min.js"></script>
 		
-		<script src='js/dc238ad.js'></script>
+		<script src='js/10daa68.js'></script>
 
         
         <script>
