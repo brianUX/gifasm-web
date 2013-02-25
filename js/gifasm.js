@@ -489,7 +489,11 @@ $(function(){
 			},
 			search: function() {
 				var query = $("form.search input").val().replace(/\s+/g, '-').toLowerCase();
-				if (query) {
+				if (query.indexOf("tag:") >= 0 ) {
+					var query = query.replace("tag:", "");
+					app.navigate("tag/"+query+"", {trigger: true});	
+				}
+				else if (query) {
 					app.navigate("search/"+query+"", {trigger: true});	
 				}
 		    	return false;

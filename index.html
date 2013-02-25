@@ -80,14 +80,17 @@
 		</script>
 		
 		<script type="text/template" id="single-gif-template">
-			<div class="gif-container single-gif">
-				<a class="gif gif-one" title="next gif">
-					<img src="<%= src %>">
+			<div class="gif-container single-gif" id="<%= id %>">
+				<a class="gif" title="next gif">
+					<img class="the-gif" src="<%= src %>">
 				</a>
 				<div class="tags">
 					<% for(var tag in tags) { %>
-			        	<span class="label label-inverse"><a href="#/tag/<%= tags[tag] %>"><%= tags[tag] %></a></span>
+			        	<span class="label label-inverse"><a href="#/tag/<% var tagsurl = tags[tag].replace(/\s+/g, '-').toLowerCase(); %><%= tagsurl %>"><%= tags[tag] %></a></span>
 			    	<% } %>
+				</div>
+				<div class="regif hide">
+					<a class="btn regif" title="regif"><img src="img/regif.png"></a>
 				</div>
 			</div>
 		</script>​
